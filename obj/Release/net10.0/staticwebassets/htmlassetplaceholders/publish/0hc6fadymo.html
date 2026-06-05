@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TYB_AMI</title>
+    <base href="/" />
+    <link href="_framework/dotnet.oylaj6ihhk.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-UEePWc3vLUOdn7UcELbzddr1/JjsseYuaa/yHgEFcAQ=" />
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="TYB_AMI.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Blazor.Bootstrap/blazor.bootstrap.css">  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <script type="importmap">{
+  "imports": {
+    "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.zxhwjtv6sc.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.oylaj6ihhk.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js"
+  },
+  "scopes": {},
+  "integrity": {
+    "./_framework/blazor.webassembly.js": "sha256-1xlHuu1iNOJiMMz2BCq95uekwHf6pdpTcgVNKVBboPs=",
+    "./_framework/blazor.webassembly.zxhwjtv6sc.js": "sha256-1xlHuu1iNOJiMMz2BCq95uekwHf6pdpTcgVNKVBboPs=",
+    "./_framework/dotnet.js": "sha256-UEePWc3vLUOdn7UcELbzddr1/JjsseYuaa/yHgEFcAQ=",
+    "./_framework/dotnet.native.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
+    "./_framework/dotnet.native.rjbmzc4jpg.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
+    "./_framework/dotnet.oylaj6ihhk.js": "sha256-UEePWc3vLUOdn7UcELbzddr1/JjsseYuaa/yHgEFcAQ=",
+    "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
+    "./_framework/dotnet.runtime.r2kbxkuujc.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU="
+  }
+}</script>
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_framework/blazor.webassembly.zxhwjtv6sc.js"></script>
+</body>
+
+<script>
+    document.addEventListener('keydown', function(e) {
+        if (e.target.type === 'number') {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+            }
+        }
+    });
+
+</script>
+
+</html>
