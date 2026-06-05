@@ -2,6 +2,28 @@
 
 <PageTitle> Math Problems </PageTitle>
 
+<Modal @ref="rules"
+       Title="Rules"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+
+    <BodyTemplate>
+        <p>Solve all 50 math problems as quickly and accurately as possible.</p>
+        <p>Your score will be shown at the end.</p>
+        <p>Click Next to start the time.</p>
+
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary"
+                @onclick="CloseRules">
+            Start Quiz
+        </Button>
+    </FooterTemplate>
+
+</Modal>
+
+
 @if (!quizFinished) {
     <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
     <div class="problem-box">
@@ -28,11 +50,26 @@ else {
     <p>You got @correctAnswers out of @problems.Count correct.</p>
 }
 
-<p>@message</p>
+<p>Answer History</p>
+
+@if (history.Count == 0){
+    <p>No answers yet.</p>
+}
+else{
+    <ul>
+        @foreach (var item in history){
+            <li>
+                @item.Problem
+                Your answer: @item.UserAnswer
+            </li>
+        }
+    </ul>
+}
 
 
 @code {
     List<MathProblem> problems = new();
+    private Modal rules = default;
     string message;
     int currentProblemIndex = 0;
     int? userAnswer = null;
@@ -40,7 +77,28 @@ else {
     bool quizFinished = false;
     bool showCorrectImage;
     int animationCounter;
+    private bool _modalShown;
+    private List<AnswerLog> history = new();
 
+
+    public class AnswerLog{
+        public string Problem { get; set; } = "";
+        public int? UserAnswer { get; set; }
+        public int CorrectAnswer { get; set; }
+        public bool IsCorrect { get; set; }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (firstRender && !_modalShown){
+            _modalShown = true;
+
+            await Task.Yield(); // critical
+            await rules.ShowAsync();
+        }
+    }
+    async Task CloseRules(){
+        await rules.HideAsync();
+    }
 
     protected override void OnInitialized(){
         for (int i = 0; i < 50; i++)
@@ -49,7 +107,7 @@ else {
         }
     }
 
-    void NextProblem(){
+    private void NextProblem(){
         var currentProblem = problems[currentProblemIndex];
         if (userAnswer == currentProblem.Solution){
             correctAnswers++;
@@ -60,6 +118,12 @@ else {
             showCorrectImage = false;
             animationCounter--;
         }
+
+        history.Add(new AnswerLog{
+            Problem = currentProblem.Problem,
+            UserAnswer = userAnswer,
+            CorrectAnswer = currentProblem.Solution,
+        });
 
         currentProblemIndex++;
         userAnswer = null;

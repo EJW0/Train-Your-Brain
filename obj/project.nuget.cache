@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "deIO1Umb784=",
+  "dgSpecHash": "Y4+xqcyz1x0=",
   "success": true,
   "projectFilePath": "/home/snsc/Blazor webapps/TYB_AMI/TYB_AMI.csproj",
   "expectedPackageFiles": [
@@ -36,8 +36,9 @@
     "/home/snsc/.nuget/packages/microsoft.jsinterop/10.0.7/microsoft.jsinterop.10.0.7.nupkg.sha512",
     "/home/snsc/.nuget/packages/microsoft.jsinterop.webassembly/10.0.7/microsoft.jsinterop.webassembly.10.0.7.nupkg.sha512",
     "/home/snsc/.nuget/packages/microsoft.net.illink.tasks/10.0.7/microsoft.net.illink.tasks.10.0.7.nupkg.sha512",
-    "/home/snsc/.nuget/packages/microsoft.net.sdk.webassembly.pack/10.0.7/microsoft.net.sdk.webassembly.pack.10.0.7.nupkg.sha512",
-    "/home/snsc/.nuget/packages/microsoft.netcore.app.runtime.mono.browser-wasm/10.0.7/microsoft.netcore.app.runtime.mono.browser-wasm.10.0.7.nupkg.sha512"
+    "/home/snsc/.nuget/packages/microsoft.net.sdk.webassembly.pack/10.0.8/microsoft.net.sdk.webassembly.pack.10.0.8.nupkg.sha512",
+    "/home/snsc/.nuget/packages/microsoft.netcore.app.ref/10.0.8/microsoft.netcore.app.ref.10.0.8.nupkg.sha512",
+    "/home/snsc/.nuget/packages/microsoft.netcore.app.runtime.mono.browser-wasm/10.0.8/microsoft.netcore.app.runtime.mono.browser-wasm.10.0.8.nupkg.sha512"
   ],
   "logs": []
 }
