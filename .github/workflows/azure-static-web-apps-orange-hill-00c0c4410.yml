@@ -27,7 +27,7 @@ jobs:
           dotnet-version: '10.0.107'           # ← change to match your project
 
       - name: Build & Publish Blazor WASM
-        run: dotnet publish -c Release -o published   # ← add path/to/App.csproj if needed
+        run: dotnet publish TYB_AMI.csproj -c Release -o published   # ← add path/to/App.csproj if needed
 
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
