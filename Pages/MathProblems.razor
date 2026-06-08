@@ -165,13 +165,14 @@ else{
             if (currentProblemIndex >= problems.Count){
                 quizFinished = true;
             }
-            userAnswer = null;
+            
         }
         if (currentProblemIndex >= problems.Count){
             quizFinished = true;
             cts?.Cancel();
         }
         focusAnswerBox = true;
+        userAnswer = null;
     }
 
     private void errorMessage(){
