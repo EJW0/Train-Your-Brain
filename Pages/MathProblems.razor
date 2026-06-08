@@ -27,21 +27,28 @@
 @if (!quizFinished) {
     <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
     <div class="problem-box">
-        <EditForm Model="problems" OnSubmit="NextProblem">
+        <EditForm Model="problems" OnValidSubmit="NextProblem">
+            @if (isEmpty == true){
+                <p class="animate__animated animate__slideInDown errorMessage">@error</p>
+            }
             <div class="problem">
-                <h1>@problems[currentProblemIndex].Problem</h1>
-                    <NumberInput TValue="int?"
-                                class="answer-input"
-                                @bind-Value="userAnswer" />
-                @if (showCorrectImage){
-                    <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
-                }
-                else if (showCorrectImage == false & currentProblemIndex > 0){
-                    <img src="incorrect_x.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
-                }
+                <div class="inputAndQuestion">
+                    <h1>@problems[currentProblemIndex].Problem</h1>
+                        <NumberInput TValue="int?"
+                                    class="answer-input"
+                                    @bind-Value="userAnswer"/>
+                
+                    @if (showCorrectImage){
+                        <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
+                    }
+                    else if (showCorrectImage == false & currentProblemIndex > 0){
+                        <img src="incorrect_x.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
+                    }
+                </div>
+                
                 
             </div>
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Next</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" class="nextButton">Next</Button>
         </EditForm>
     </div>
 }
@@ -50,7 +57,7 @@ else {
     <p>You got @correctAnswers out of @problems.Count correct.</p>
 }
 
-<p>Answer History</p>
+<p>Answer History (debug)</p>
 
 @if (history.Count == 0){
     <p>No answers yet.</p>
@@ -69,14 +76,15 @@ else{
 
 @code {
     List<MathProblem> problems = new();
-    private Modal rules = default;
-    string message;
+    private Modal rules = default!;
     int currentProblemIndex = 0;
     int? userAnswer = null;
     int correctAnswers = 0;
     bool quizFinished = false;
     bool showCorrectImage;
     int animationCounter;
+    string? error; 
+    bool? isEmpty;
     private bool _modalShown;
     private List<AnswerLog> history = new();
 
@@ -108,28 +116,45 @@ else{
     }
 
     private void NextProblem(){
-        var currentProblem = problems[currentProblemIndex];
-        if (userAnswer == currentProblem.Solution){
-            correctAnswers++;
-            animationCounter++;
-            showCorrectImage = true;
+        @* Check for valid input *@
+        errorMessage();
+        if (userAnswer != null){
+
+            var currentProblem = problems[currentProblemIndex];
+            if (userAnswer == currentProblem.Solution){
+                correctAnswers++;
+                animationCounter++;
+                showCorrectImage = true;
+            }
+            else{
+                showCorrectImage = false;
+                animationCounter--;
+            }
+
+            history.Add(new AnswerLog{
+                Problem = currentProblem.Problem,
+                UserAnswer = userAnswer,
+                CorrectAnswer = currentProblem.Solution,
+            });
+
+            currentProblemIndex++;
+            userAnswer = null;
+            if (currentProblemIndex >= problems.Count){
+                quizFinished = true;
+            }
+        }
+        @* isEmpty = null; *@
+        
+    }
+
+    private void errorMessage(){
+        if (userAnswer == null){
+            isEmpty = true;
+            error = "Please enter a number";
         }
         else{
-            showCorrectImage = false;
-            animationCounter--;
+            isEmpty = false;
+            error = "";
         }
-
-        history.Add(new AnswerLog{
-            Problem = currentProblem.Problem,
-            UserAnswer = userAnswer,
-            CorrectAnswer = currentProblem.Solution,
-        });
-
-        currentProblemIndex++;
-        userAnswer = null;
-        if (currentProblemIndex >= problems.Count){
-            quizFinished = true;
-        }
-        
     }
 }
