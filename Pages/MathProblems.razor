@@ -22,7 +22,7 @@
     </FooterTemplate>
 
 </Modal>
-
+<p>Current userAnswer: @(userAnswer?.ToString() ?? "NULL")</p>
 
 @if (!quizFinished) {
     <div class="upperInfo">
@@ -30,7 +30,7 @@
         <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
     </div>
     <div class="problem-box">
-        <EditForm Model="problems" OnValidSubmit="NextProblem">
+        <EditForm Model="problems" OnSubmit="NextProblem">
             <div class="errorMessage">
                 @if (isEmpty == true){
                     <p class="animate__animated animate__slideInUp">@error</p>
@@ -149,10 +149,11 @@ else{
             });
 
             currentProblemIndex++;
-            userAnswer = null;
+            
             if (currentProblemIndex >= problems.Count){
                 quizFinished = true;
             }
+            userAnswer = null;
         }
         if (currentProblemIndex >= problems.Count){
             quizFinished = true;
