@@ -1,5 +1,5 @@
 @page "/math"
-
+@inject IJSRuntime JS
 <PageTitle> Math Problems </PageTitle>
 
 <Modal @ref="rules"
@@ -41,7 +41,9 @@
                     <h1>@problems[currentProblemIndex].Problem</h1>
                         <NumberInput TValue="int?"
                                     class="answer-input"
-                                    @bind-Value="userAnswer"/>
+                                    @bind-Value="userAnswer"
+                                    @ref="answerInput"
+                                    @key="currentProblemIndex"/>
                 
                     @if (showCorrectImage){
                         <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
@@ -96,6 +98,8 @@ else{
     private CancellationTokenSource cts = new();
     private bool timerRunning = false;
     private int elapsedSeconds = 0;
+    private BlazorBootstrap.NumberInput<int?> answerInput;
+    private bool focusAnswerBox = true;
 
 
     public class AnswerLog{
@@ -106,18 +110,26 @@ else{
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (focusAnswerBox){
+        focusAnswerBox = false;
+        await JS.InvokeVoidAsync("eval", "document.querySelector('.answer-input')?.focus()");
+        }
+
         if (firstRender && !_modalShown){
             _modalShown = true;
 
-            await Task.Yield(); // critical
+            await Task.Yield(); 
             await rules.ShowAsync();
         }
+        @* await base.OnAfterRenderAsync(firstRender); *@
+
     }
     async Task CloseRules(){
         await rules.HideAsync();
         timerRunning = true;
         cts = new CancellationTokenSource();
         _ = RunTimer();
+        focusAnswerBox = true;
     }
 
     protected override void OnInitialized(){
@@ -159,7 +171,7 @@ else{
             quizFinished = true;
             cts?.Cancel();
         }
-        
+        focusAnswerBox = true;
     }
 
     private void errorMessage(){
