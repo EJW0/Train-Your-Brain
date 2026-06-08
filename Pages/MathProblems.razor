@@ -25,7 +25,10 @@
 
 
 @if (!quizFinished) {
-    <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
+    <div class="upperInfo">
+        <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
+        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    </div>
     <div class="problem-box">
         <EditForm Model="problems" OnValidSubmit="NextProblem">
             @if (isEmpty == true){
@@ -54,10 +57,11 @@
 }
 else {
     <h1>Quiz Complete!</h1>
-    <p>You got @correctAnswers out of @problems.Count correct.</p>
+    <p>Score: @correctAnswers / @problems.Count</p>
+    <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
 }
 
-<p>Answer History (debug)</p>
+@* <p>Answer History (debug)</p>
 
 @if (history.Count == 0){
     <p>No answers yet.</p>
@@ -71,7 +75,7 @@ else{
             </li>
         }
     </ul>
-}
+} *@
 
 
 @code {
@@ -87,6 +91,9 @@ else{
     bool? isEmpty;
     private bool _modalShown;
     private List<AnswerLog> history = new();
+    private CancellationTokenSource cts = new();
+    private bool timerRunning = false;
+    private int elapsedSeconds = 0;
 
 
     public class AnswerLog{
@@ -106,6 +113,9 @@ else{
     }
     async Task CloseRules(){
         await rules.HideAsync();
+        timerRunning = true;
+        cts = new CancellationTokenSource();
+        _ = RunTimer();
     }
 
     protected override void OnInitialized(){
@@ -116,7 +126,6 @@ else{
     }
 
     private void NextProblem(){
-        @* Check for valid input *@
         errorMessage();
         if (userAnswer != null){
 
@@ -143,7 +152,10 @@ else{
                 quizFinished = true;
             }
         }
-        @* isEmpty = null; *@
+        if (currentProblemIndex >= problems.Count){
+            quizFinished = true;
+            cts?.Cancel();
+        }
         
     }
 
@@ -157,4 +169,33 @@ else{
             error = "";
         }
     }
+
+    private async Task StartQuiz(){
+        if (timerRunning)
+            return;
+
+        timerRunning = true;
+        cts = new CancellationTokenSource();
+        _ = RunTimer();
+    }
+
+    private async Task RunTimer() {
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (await timer.WaitForNextTickAsync(cts!.Token)){
+                elapsedSeconds++;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException){
+            // Timer stopped
+        }
+        timer.Dispose();
+    }
+
+    public void Dispose(){
+        cts?.Cancel();
+        cts?.Dispose();
+    }
+
 }
