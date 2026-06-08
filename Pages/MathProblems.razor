@@ -31,9 +31,11 @@
     </div>
     <div class="problem-box">
         <EditForm Model="problems" OnValidSubmit="NextProblem">
-            @if (isEmpty == true){
-                <p class="animate__animated animate__slideInDown errorMessage">@error</p>
-            }
+            <div class="errorMessage">
+                @if (isEmpty == true){
+                    <p class="animate__animated animate__slideInUp">@error</p>
+                }
+            </div>    
             <div class="problem">
                 <div class="inputAndQuestion">
                     <h1>@problems[currentProblemIndex].Problem</h1>

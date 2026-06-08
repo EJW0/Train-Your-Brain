@@ -164,16 +164,18 @@ code {
     column-gap: 5px;
     justify-content: center;
     align-items: center;
-    padding: 10px;
     text-align: center;
-    margin-top: 10%;
-    height: 13em;
+    margin-top: 5%;
+    height: 15em;
 }
 
 .errorMessage {
     /* border: 1px solid blue; */
+    position: absolute;
     color: red;
-    margin: auto;
+    left: 50%;
+    top: -0.5em;
+    transform: translateX(-50%);
     --animate-duration: 0.5s;
 }
 
