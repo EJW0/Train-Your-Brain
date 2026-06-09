@@ -25,11 +25,12 @@
 
 
 @if (!quizFinished) {
-    <div class="upperInfo"></div>
-    <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
-    <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    <div class="upperInfo">
+        <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
+        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    </div>
     <div class="problem-box">
-        <EditForm Model="problems" OnValidSubmit="NextProblem">
+        <EditForm Model="problems" OnSubmit="NextProblem">
             @if (isEmpty == true){
                 <p class="animate__animated animate__slideInDown errorMessage">@error</p>
             }
@@ -46,9 +47,7 @@
                     else if (showCorrectImage == false & currentProblemIndex > 0){
                         <img src="incorrect_x.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
                     }
-                </div>
-                
-                
+                </div>              
             </div>
             <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" class="nextButton">Next</Button>
         </EditForm>
@@ -60,7 +59,7 @@ else {
     <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
 }
 
-@* <p>Answer History (debug)</p>
+<p>Answer History (debug)</p>
 
 @if (history.Count == 0){
     <p>No answers yet.</p>
@@ -74,7 +73,7 @@ else{
             </li>
         }
     </ul>
-} *@
+}
 
 
 @code {
@@ -118,8 +117,7 @@ else{
     }
 
     protected override void OnInitialized(){
-        for (int i = 0; i < 50; i++)
-        {
+        for (int i = 0; i < 50; i++){
             problems.Add(new MathProblem());
         }
     }
@@ -146,7 +144,7 @@ else{
             });
 
             currentProblemIndex++;
-            userAnswer = null;
+            
             if (currentProblemIndex >= problems.Count){
                 quizFinished = true;
             }
@@ -155,6 +153,7 @@ else{
             quizFinished = true;
             cts?.Cancel();
         }
+        userAnswer = null;
         
     }
 
