@@ -1,0 +1,129 @@
+@page "/wordmemory"
+@inject HttpClient Http
+
+<PageTitle>Word Memorization Test</PageTitle>
+
+
+@if (gameState == GameState.Memorize){
+    <h3>Memorize These Words</h3>
+    <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
+
+    <ul>
+        <div class="wordContainer">
+            @foreach (var word in game.SelectedWords){
+                <div class="containerItem ">
+                    @word
+                </div>
+            }
+        </div>
+    </ul>
+}
+else if (gameState == GameState.Recall){
+    <h3>Type All The Words You Remember</h3>
+    <p>Time Remaining: @TimeSpan.FromSeconds(recallSeconds).ToString(@"mm\:ss")</p>
+
+    <EditForm Model=game OnSubmit="SubmitWord">
+        <TextInput @bind-Value="@currentInput" TextAlignment="Alignment.Center" class="wordInput"/>
+        <div class="buttonGroup">
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+            <Button @onclick="FinishRecall" Color="ButtonColor.Danger">Done</Button>
+        </div>
+    </EditForm>
+
+    <p>User input:</p>
+    <ul>
+        @foreach (var word in game.UserWords){
+            <li>@word</li>
+        }
+    </ul>
+}
+else if (gameState == GameState.Results){
+    <h3>Final Score: @game.Score / 30</h3>
+    <p>Correct Words Remembered</p>
+    <ul>
+        @foreach (var word in game.ScoredWords){
+            <li>@word</li>
+        }
+    </ul>
+}
+
+@code {
+    private WordMemorization game = new ();
+    private string currentInput = "";
+    private int memorizeSeconds = 30;
+    private int recallSeconds = 120;
+    private CancellationTokenSource cts = new();
+    private GameState gameState = GameState.Memorize;
+    private enum GameState
+    {
+        Memorize,
+        Recall,
+        Results
+    }
+
+    protected override async Task OnInitializedAsync(){
+        var text = await Http.GetStringAsync("wordBank.txt");
+        game.LoadWords(text.Split('\n'));
+        game.SelectRandomWords(30);
+        gameState = GameState.Memorize;
+        _ = MemorizeTimer();
+    }
+
+    private async Task MemorizeTimer(){
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (memorizeSeconds > 0){
+                await timer.WaitForNextTickAsync(cts.Token);
+                memorizeSeconds--;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            gameState = GameState.Recall;
+            await InvokeAsync(StateHasChanged);
+            _ = RecallTimer();
+        }
+        catch (OperationCanceledException){
+        }
+        timer.Dispose();
+    }
+
+    private async Task RecallTimer(){
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (recallSeconds > 0){
+                await timer.WaitForNextTickAsync(cts.Token);
+                recallSeconds--;
+                await InvokeAsync(StateHasChanged);
+            }
+            FinishRecall();
+        }
+        catch (OperationCanceledException){
+        }
+        timer.Dispose();
+    }
+
+    private Task SubmitWord(){
+        string word = currentInput.Trim().ToLower();
+        if (string.IsNullOrWhiteSpace(word))
+            return Task.CompletedTask;
+        if (word == "done"){
+            FinishRecall();
+            return Task.CompletedTask;
+        }
+
+        game.AddAnswer(word);
+        currentInput = "";
+        return Task.CompletedTask;
+    }
+
+    private void FinishRecall(){
+        cts.Cancel();
+        game.CalculateScore();
+        gameState = GameState.Results;
+    }
+
+    public void Dispose(){
+        cts.Cancel();
+        cts.Dispose();
+    }
+}

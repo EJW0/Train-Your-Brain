@@ -52,6 +52,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2VhdGhlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/snsc/Blazor webapps/TYB_AMI/Pages/WordMemorizationGame.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV29yZE1lbW9yaXphdGlvbkdhbWUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/snsc/Blazor webapps/TYB_AMI/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
