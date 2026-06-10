@@ -50,8 +50,8 @@ else if (gameState == GameState.Results){
 @code {
     private WordMemorization game = new ();
     private string currentInput = "";
-    private int memorizeSeconds = 30;
-    private int recallSeconds = 120;
+    private int memorizeSeconds = 2;
+    private int recallSeconds = 2;
     private CancellationTokenSource cts = new();
     private GameState gameState = GameState.Memorize;
     private enum GameState
@@ -95,31 +95,30 @@ else if (gameState == GameState.Results){
                 recallSeconds--;
                 await InvokeAsync(StateHasChanged);
             }
-            FinishRecall();
+            await FinishRecall();
         }
         catch (OperationCanceledException){
         }
         timer.Dispose();
     }
 
-    private Task SubmitWord(){
+    private async Task SubmitWord(){
         string word = currentInput.Trim().ToLower();
         if (string.IsNullOrWhiteSpace(word))
-            return Task.CompletedTask;
-        if (word == "done"){
-            FinishRecall();
-            return Task.CompletedTask;
-        }
+            return;
 
         game.AddAnswer(word);
         currentInput = "";
-        return Task.CompletedTask;
     }
 
-    private void FinishRecall(){
-        cts.Cancel();
+    private async Task FinishRecall(){
         game.CalculateScore();
         gameState = GameState.Results;
+        await InvokeAsync(StateHasChanged);
+
+        if (!cts.IsCancellationRequested){
+            cts.Cancel();
+        }
     }
 
     public void Dispose(){
