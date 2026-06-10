@@ -50,8 +50,8 @@ else if (gameState == GameState.Results){
 @code {
     private WordMemorization game = new ();
     private string currentInput = "";
-    private int memorizeSeconds = 2;
-    private int recallSeconds = 2;
+    private int memorizeSeconds = 30;
+    private int recallSeconds = 120;
     private CancellationTokenSource cts = new();
     private GameState gameState = GameState.Memorize;
     private enum GameState
