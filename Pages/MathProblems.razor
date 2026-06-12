@@ -10,21 +10,40 @@
     <BodyTemplate>
         <p>Solve all 50 math problems as quickly and accurately as possible.</p>
         <p>Your score will be shown at the end.</p>
-        <p>Click Next to start the time.</p>
+        <p>Click Begin to start the time.</p>
 
     </BodyTemplate>
 
     <FooterTemplate>
         <Button Color="ButtonColor.Primary"
                 @onclick="CloseRules">
-            Start Quiz
+            Begin
         </Button>
     </FooterTemplate>
 
 </Modal>
 
+<div class="progressBar">
+<Progress Class="mb-3">
+        <ProgressBar @ref="progressBar" />
+        @for (int i=0; i < 50; i++){
+            if (problems[i].isCorrect == true){
+                <ProgressBar Style="background-color: #80f74d;" Width="2" />
+            }
+            if (problems[i].isCorrect == false){
+                <ProgressBar Style="background-color: #FF0358;" Width="2" />
+            }
+        }
+    </Progress>
+</div>
 
-@if (!quizFinished) {
+@if (!quizFinished){
+    
+    
+
+
+    
+
     <div class="upperInfo">
         <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
         <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
@@ -40,7 +59,6 @@
                         <NumberInput TValue="int?"
                                     class="answer-input"
                                     @bind-Value="userAnswer"/>
-                
                     @if (showCorrectImage){
                         <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
                     }
@@ -92,6 +110,8 @@ else{
     private CancellationTokenSource cts = new();
     private bool timerRunning = false;
     private int elapsedSeconds = 0;
+    private ProgressBar progressBar = default!;
+    private int? lastResponse;
 
 
     public class AnswerLog{
@@ -109,7 +129,7 @@ else{
             await rules.ShowAsync();
         }
     }
-    
+
     async Task CloseRules(){
         await rules.HideAsync();
         timerRunning = true;
@@ -125,6 +145,7 @@ else{
 
     private void NextProblem(){
         errorMessage();
+        lastResponse = userAnswer;
         if (userAnswer != null){
 
             var currentProblem = problems[currentProblemIndex];
@@ -132,10 +153,12 @@ else{
                 correctAnswers++;
                 animationCounter++;
                 showCorrectImage = true;
+                currentProblem.isCorrect = true;
             }
             else{
                 showCorrectImage = false;
                 animationCounter--;
+                currentProblem.isCorrect = false;
             }
 
             history.Add(new AnswerLog{
@@ -192,9 +215,6 @@ else{
         timer.Dispose();
     }
 
-    public void Dispose(){
-        cts?.Cancel();
-        cts?.Dispose();
-    }
+
 
 }

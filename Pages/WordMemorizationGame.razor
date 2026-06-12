@@ -74,8 +74,8 @@ else if (gameState == GameState.Results){
     private Modal rules = default!;
     private WordMemorization game = new ();
     private string currentInput = "";
-    private int memorizeSeconds = 1200;
-    private int recallSeconds = 1200;
+    private int memorizeSeconds = 120;
+    private int recallSeconds = 120;
     private CancellationTokenSource cts = new();
     private GameState gameState = GameState.Rules;
     private bool _modalShown;

@@ -272,3 +272,9 @@ code {
     padding: 1em;
     /* rotate: 180deg; */
 }
+
+.progressBar {
+    height: 1.12em;
+    border-radius: 7px;
+
+}

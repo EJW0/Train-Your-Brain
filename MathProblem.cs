@@ -23,6 +23,7 @@ namespace TYB_AMI//was initially TrainYourBrainApp
         //public Vector2 Position { get; set; }
         public bool Correct { get; set; }
         public int? UserAnswer { get; set; }
+        public bool? isCorrect { get; set; }
 
         // Constructor
         public MathProblem(/*Vector2 position*/)
