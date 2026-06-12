@@ -105,10 +105,11 @@ else{
         if (firstRender && !_modalShown){
             _modalShown = true;
 
-            await Task.Yield(); // critical
+            await Task.Yield(); 
             await rules.ShowAsync();
         }
     }
+    
     async Task CloseRules(){
         await rules.HideAsync();
         timerRunning = true;

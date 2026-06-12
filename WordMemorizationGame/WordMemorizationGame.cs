@@ -28,7 +28,7 @@
         public void AddAnswer(string word){
             word = word.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(word)){
-                UserWords.Add(word);
+                UserWords.Insert(0, word);
             }
         }
 

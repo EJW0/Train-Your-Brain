@@ -1,10 +1,32 @@
 @page "/wordmemory"
 @inject HttpClient Http
+@using BlazorBootstrap
 
 <PageTitle>Word Memorization Test</PageTitle>
 
+@if (gameState == GameState.Rules){
+    <Modal @ref="rules"
+       Title="Rules"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
 
-@if (gameState == GameState.Memorize){
+    <BodyTemplate>
+        <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
+        <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
+        <p>Click Next to start the time.</p>
+
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary"
+                @onclick="CloseRules">
+            Start Quiz
+        </Button>
+    </FooterTemplate>
+    </Modal>
+
+}
+else if (gameState == GameState.Memorize){
     <h3>Memorize These Words</h3>
     <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
 
@@ -31,11 +53,11 @@ else if (gameState == GameState.Recall){
     </EditForm>
 
     <p>User input:</p>
-    <ul>
-        @foreach (var word in game.UserWords){
-            <li>@word</li>
+    <div class="recalledWordsContainer">
+        @foreach (var word in game.UserWords.AsEnumerable().Reverse()){
+            <p class="recalledWords animate__animated">@word</p>
         }
-    </ul>
+    </div>
 }
 else if (gameState == GameState.Results){
     <h3>Final Score: @game.Score / 30</h3>
@@ -48,14 +70,18 @@ else if (gameState == GameState.Results){
 }
 
 @code {
+    private Modal rules = default!;
     private WordMemorization game = new ();
     private string currentInput = "";
     private int memorizeSeconds = 30;
-    private int recallSeconds = 120;
+    private int recallSeconds = 1200;
     private CancellationTokenSource cts = new();
-    private GameState gameState = GameState.Memorize;
+    private GameState gameState = GameState.Rules;
+    private bool _modalShown;
+
     private enum GameState
     {
+        Rules,
         Memorize,
         Recall,
         Results
@@ -65,8 +91,7 @@ else if (gameState == GameState.Results){
         var text = await Http.GetStringAsync("wordBank.txt");
         game.LoadWords(text.Split('\n'));
         game.SelectRandomWords(30);
-        gameState = GameState.Memorize;
-        _ = MemorizeTimer();
+        gameState = GameState.Rules;
     }
 
     private async Task MemorizeTimer(){
@@ -124,5 +149,27 @@ else if (gameState == GameState.Results){
     public void Dispose(){
         cts.Cancel();
         cts.Dispose();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        Console.WriteLine($"OnAfterRenderAsync: firstRender={firstRender}");
+
+        if (firstRender && !_modalShown){
+            Console.WriteLine("Attempting to show modal");
+
+            _modalShown = true;
+
+            await Task.Yield(); 
+            await rules.ShowAsync();
+            Console.WriteLine("ShowAsync completed");
+
+        }
+    }
+    
+    private async Task CloseRules(){
+        await rules.HideAsync();
+        cts = new CancellationTokenSource();
+        _ = MemorizeTimer();
+        gameState = GameState.Memorize;
     }
 }
