@@ -27,6 +27,7 @@
 
 }
 else if (gameState == GameState.Memorize){
+
     <h3>Memorize These Words</h3>
     <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
 
@@ -54,8 +55,8 @@ else if (gameState == GameState.Recall){
 
     <p>User input:</p>
     <div class="recalledWordsContainer">
-        @foreach (var word in game.UserWords.AsEnumerable().Reverse()){
-            <p class="recalledWords animate__animated">@word</p>
+        @foreach (var word in game.UserWords){
+            <p class="recalledWords">@word</p>
         }
     </div>
 }
@@ -73,7 +74,7 @@ else if (gameState == GameState.Results){
     private Modal rules = default!;
     private WordMemorization game = new ();
     private string currentInput = "";
-    private int memorizeSeconds = 30;
+    private int memorizeSeconds = 1200;
     private int recallSeconds = 1200;
     private CancellationTokenSource cts = new();
     private GameState gameState = GameState.Rules;
@@ -134,6 +135,7 @@ else if (gameState == GameState.Results){
 
         game.AddAnswer(word);
         currentInput = "";
+
     }
 
     private async Task FinishRecall(){

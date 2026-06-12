@@ -248,20 +248,27 @@ code {
 }
 
 .recalledWordsContainer {
+    /* border: 1px solid firebrick; */
+    display: flex;
+    flex-direction: column;
     list-style-type: none;
     margin-left: 0; 
     padding-left: 0;
     width: 40%;
+    height: 50vh;
     margin: auto;
-    rotate: 180deg;
+    /* rotate: 180deg; */
+    /* transform: scaleY(-1); */ 
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 .recalledWords {
     border: 1px solid rgb(206, 204, 212);
     border-radius: 10px;
     text-align: center;
+    overflow-wrap: break-word;
     padding: 1em;
-    rotate: 180deg;
-    animation: slideInDown;
-    --animate-duration: 0.5s;
+    /* rotate: 180deg; */
 }
