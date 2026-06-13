@@ -72,9 +72,12 @@
     </div>
 }
 else {
-    <h1>Quiz Complete!</h1>
-    <p>Score: @correctAnswers / @problems.Count</p>
-    <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    <div class="resultsContainer">
+        <h1>Quiz Complete!</h1>
+        <p></p>
+        <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+        <h2>Score: @correctAnswers / @problems.Count</h2>
+    </div>
 }
 
 <p>Answer History (debug)</p>

@@ -215,6 +215,7 @@ code {
     justify-content: space-evenly;
     width: 80%;
     margin: auto;
+    margin-top: 2em; 
     padding: 1em;
     border-radius: 10px;
 }
@@ -226,7 +227,14 @@ code {
     /* margin: 0.5em; */
     font-size: 1.5em;
     transition: transform 0.3s ease;
+}
 
+.rememberedWord {
+    color: #26b050;
+}
+
+.forgottenWord {
+    color:#e0e0e0;
 }
 
 .containerItem:hover {
@@ -255,7 +263,6 @@ code {
     margin-left: 0; 
     padding-left: 0;
     width: 40%;
-    height: 50vh;
     margin: auto;
     /* rotate: 180deg; */
     /* transform: scaleY(-1); */ 
@@ -276,5 +283,12 @@ code {
 .progressBar {
     height: 1.12em;
     border-radius: 7px;
+}
 
+.resultsContainer {
+    /* border: 1px solid goldenrod; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2em;
 }

@@ -24,7 +24,6 @@
         </Button>
     </FooterTemplate>
     </Modal>
-
 }
 else if (gameState == GameState.Memorize){
 
@@ -33,7 +32,7 @@ else if (gameState == GameState.Memorize){
 
     <ul>
         <div class="wordContainer">
-            @foreach (var word in game.SelectedWords){
+            @foreach (string word in game.SelectedWords){
                 <div class="containerItem ">
                     @word
                 </div>
@@ -53,21 +52,57 @@ else if (gameState == GameState.Recall){
         </div>
     </EditForm>
 
-    <p>User input:</p>
-    <div class="recalledWordsContainer">
+    <div class="recalledWordsContainer" style="height: 50vh; margin-top:2em">
         @foreach (var word in game.UserWords){
             <p class="recalledWords">@word</p>
         }
     </div>
 }
+else if (gameState== GameState.TimeOver){
+    <div class="resultsContainer animate__animated animate__zoomIn" style="gap: 3em; height: 60vh; justify-content: center; --animate-duration: 0.5s;">
+        <h1>Time's up!</h1>
+        <Button @onclick="FinishRecall" Color="ButtonColor.Primary">Show Results</Button>
+    </div>
+}
 else if (gameState == GameState.Results){
-    <h3>Final Score: @game.Score / 30</h3>
-    <p>Correct Words Remembered</p>
-    <ul>
-        @foreach (var word in game.ScoredWords){
-            <li>@word</li>
-        }
-    </ul>
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Results" Active="true">
+            <Content>
+                <div class="resultsContainer">
+                <h3>Final Score: @game.Score / 30</h3>
+                <div class="wordContainer">
+                    @foreach (string word in game.SelectedWords){
+                        <div class="containerItem">
+                            @if (game.ScoredWords.Contains(word)){
+                                <div class="rememberedWord">
+                                    @word
+                                </div>
+                            }
+                            else{
+                                <div class="forgottenWord">
+                                    @word
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            </Content>
+        </Tab>
+        <Tab Title="Responses">
+            <Content>
+                <div class="resultsContainer">
+                    <h3>Word Memorization Responses</h3>
+                    <div class="recalledWordsContainer" style="margin-top:2em; height: 60vh">
+                        @foreach (var word in game.UserWords){
+                            <p class="recalledWords">@word</p>
+                        }
+                    </div>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+    
 }
 
 @code {
@@ -85,6 +120,7 @@ else if (gameState == GameState.Results){
         Rules,
         Memorize,
         Recall,
+        TimeOver,
         Results
     }
 
@@ -121,7 +157,7 @@ else if (gameState == GameState.Results){
                 recallSeconds--;
                 await InvokeAsync(StateHasChanged);
             }
-            await FinishRecall();
+            await FinishTimer();
         }
         catch (OperationCanceledException){
         }
@@ -136,6 +172,11 @@ else if (gameState == GameState.Results){
         game.AddAnswer(word);
         currentInput = "";
 
+    }
+
+    private async Task FinishTimer(){
+        gameState = GameState.TimeOver;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task FinishRecall(){
