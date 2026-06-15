@@ -71,7 +71,7 @@ else {
         <Tab Title="Results" Active="true">
             <Content>
                 <div class="resultsContainer">
-                    <h1>Quiz Complete!</h1>
+                    <h1>Results</h1>
                     <p></p>
                     <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
                     <h2>Score: @correctAnswers / @problems.Count</h2>
@@ -82,7 +82,7 @@ else {
             <Content>
                 <div class="resultsContainer">
                     <h3>Answer History</h3>
-                    <div class="responsesContainer" style="height: 60vh; margin-top:2em">
+                    <div class="responsesContainer" style="height: 60vh; margin-top:1em">
                         @foreach (var item in history){
                             if (item.IsCorrect == true){
                                 <div class="responses" style="display: flex; width: 95%; height: 100%; margin-bottom: 1em">
