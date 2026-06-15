@@ -52,9 +52,9 @@ else if (gameState == GameState.Recall){
         </div>
     </EditForm>
 
-    <div class="recalledWordsContainer" style="height: 50vh; margin-top:2em">
+    <div class="responsesContainer" style="height: 50vh; margin-top:2em">
         @foreach (var word in game.UserWords){
-            <p class="recalledWords">@word</p>
+            <p class="responses" style="padding: 1em;">@word</p>
         }
     </div>
 }
@@ -74,7 +74,7 @@ else if (gameState == GameState.Results){
                     @foreach (string word in game.SelectedWords){
                         <div class="containerItem">
                             @if (game.ScoredWords.Contains(word)){
-                                <div class="rememberedWord">
+                                <div class="correctResponse">
                                     @word
                                 </div>
                             }
@@ -93,9 +93,9 @@ else if (gameState == GameState.Results){
             <Content>
                 <div class="resultsContainer">
                     <h3>Word Memorization Responses</h3>
-                    <div class="recalledWordsContainer" style="margin-top:2em; height: 60vh">
+                    <div class="responsesContainer" style="margin-top:2em; height: 60vh">
                         @foreach (var word in game.UserWords){
-                            <p class="recalledWords">@word</p>
+                            <p class="responses" style="padding: 1em;">@word</p>
                         }
                     </div>
                 </div>
@@ -109,7 +109,7 @@ else if (gameState == GameState.Results){
     private Modal rules = default!;
     private WordMemorization game = new ();
     private string currentInput = "";
-    private int memorizeSeconds = 120;
+    private int memorizeSeconds = 1;
     private int recallSeconds = 120;
     private CancellationTokenSource cts = new();
     private GameState gameState = GameState.Rules;

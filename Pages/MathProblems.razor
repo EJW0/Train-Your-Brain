@@ -38,12 +38,6 @@
 </div>
 
 @if (!quizFinished){
-    
-    
-
-
-    
-
     <div class="upperInfo">
         <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
         <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
@@ -72,29 +66,45 @@
     </div>
 }
 else {
-    <div class="resultsContainer">
-        <h1>Quiz Complete!</h1>
-        <p></p>
-        <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
-        <h2>Score: @correctAnswers / @problems.Count</h2>
-    </div>
+    <p></p>
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Results" Active="true">
+            <Content>
+                <div class="resultsContainer">
+                    <h1>Quiz Complete!</h1>
+                    <p></p>
+                    <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+                    <h2>Score: @correctAnswers / @problems.Count</h2>
+                </div>
+            </Content>
+        </Tab>
+        <Tab Title="Responses">
+            <Content>
+                <div class="resultsContainer">
+                    <h3>Answer History</h3>
+                    <div class="responsesContainer" style="height: 60vh; margin-top:2em">
+                        @foreach (var item in history){
+                            if (item.IsCorrect == true){
+                                <div class="responses" style="display: flex; width: 95%; height: 100%; margin-bottom: 1em">
+                                    <div class="indicator" style="background: #80F74D;"></div>
+                                    <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
+                                </div>
+                            }
+                            else{
+                                <div class="responses" style="display: flex; width: 95%; height: 100%; margin-bottom: 1em">
+                                    <div class="indicator" style="background: #FF0258"></div>
+                                    <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+    
 }
 
-<p>Answer History (debug)</p>
-
-@if (history.Count == 0){
-    <p>No answers yet.</p>
-}
-else{
-    <ul>
-        @foreach (var item in history){
-            <li>
-                @item.Problem
-                Your answer: @item.UserAnswer
-            </li>
-        }
-    </ul>
-}
 
 
 @code {
@@ -152,7 +162,9 @@ else{
         if (userAnswer != null){
 
             var currentProblem = problems[currentProblemIndex];
-            if (userAnswer == currentProblem.Solution){
+            bool isCorrect = userAnswer == currentProblem.Solution;
+
+            if (isCorrect){
                 correctAnswers++;
                 animationCounter++;
                 showCorrectImage = true;
@@ -168,6 +180,7 @@ else{
                 Problem = currentProblem.Problem,
                 UserAnswer = userAnswer,
                 CorrectAnswer = currentProblem.Solution,
+                IsCorrect = isCorrect
             });
 
             currentProblemIndex++;

@@ -229,8 +229,12 @@ code {
     transition: transform 0.3s ease;
 }
 
-.rememberedWord {
+.correctResponse {
     color: #26b050;
+}
+
+.incorrectResponse {
+    color: #FF0258;
 }
 
 .forgottenWord {
@@ -255,7 +259,7 @@ code {
     margin: auto;
 }
 
-.recalledWordsContainer {
+.responsesContainer {
     /* border: 1px solid firebrick; */
     display: flex;
     flex-direction: column;
@@ -271,12 +275,13 @@ code {
     scroll-behavior: smooth;
 }
 
-.recalledWords {
+.responses {
     border: 1px solid rgb(206, 204, 212);
     border-radius: 10px;
     text-align: center;
     overflow-wrap: break-word;
-    padding: 1em;
+    align-items: center;
+    font-size: 1.2em;
     /* rotate: 180deg; */
 }
 
@@ -291,4 +296,16 @@ code {
     flex-direction: column;
     align-items: center;
     margin: 2em;
+}
+
+.indicatorContainer {
+    /* border: 1px solid hotpink; */
+    display: flex;
+
+}
+
+.indicator { 
+    width: 5%;
+    height: 100%;
+    border-radius: 7px 0px 0px 7px;
 }
