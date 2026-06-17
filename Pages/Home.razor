@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 
@@ -7,4 +8,38 @@
     Test Animation
 </h1>
 
-Welcome to your new app.
+<h1>
+    @if (_loading)
+    {
+        <span>Loading...</span>
+    }
+    else if (_displayName != null)
+    {
+        <span>Hello, @_displayName!</span>
+    }
+    else
+    {
+        <span>Hello, guest!</span>
+    }
+</h1>
+
+@code {
+    private bool _loading = true;
+    private string? _displayName;
+
+    protected override async Task OnInitializedAsync(){
+        // This call waits here until the WordPress page outside the
+        // iframe posts the login info in. If you're testing this
+        // OUTSIDE of WordPress (just opening the Azure URL directly),
+        // this will wait forever, which is expected.
+        var auth = await JS.InvokeAsync<AuthData>("wordGameAuth.waitForAuth");
+
+        _displayName = auth?.DisplayName;
+        _loading = false;
+    }
+
+    private class AuthData{
+        public string? Token { get; set; }
+        public string? DisplayName { get; set; }
+    }
+}
