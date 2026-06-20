@@ -1,11 +1,11 @@
-// wwwroot/js/auth-bridge.js
+// wwwroot/js/tyb-auth-bridge.js
 //
 // Sits inside the Blazor app and listens for a message posted in
 // from the parent WordPress window. That message contains the
 // user's login token AND their display name, so Blazor doesn't
 // need to make an extra call just to say "Hello [Name]".
 
-window.wordGameAuth = (function () {
+window.tybAuth = (function () {
     let authData = null;
     let resolveWaiter = null;
     let waiterPromise = new Promise((resolve) => { resolveWaiter = resolve; });
@@ -16,7 +16,7 @@ window.wordGameAuth = (function () {
         // check event.origin === "https://yourwordpresssite.com"
 
         const data = event.data;
-        if (data && data.type === 'WORDGAME_AUTH') {
+        if (data && data.type === 'TYB_AUTH') {
             authData = {
                 token: data.token,
                 displayName: data.displayName

@@ -9,16 +9,13 @@
 </h1>
 
 <h1>
-    @if (_loading)
-    {
+    @if (_loading){
         <span>Loading...</span>
     }
-    else if (_displayName != null)
-    {
+    else if (_displayName != null){
         <span>Hello, @_displayName!</span>
     }
-    else
-    {
+    else{
         <span>Hello, guest!</span>
     }
 </h1>
@@ -32,7 +29,7 @@
         // iframe posts the login info in. If you're testing this
         // OUTSIDE of WordPress (just opening the Azure URL directly),
         // this will wait forever, which is expected.
-        var auth = await JS.InvokeAsync<AuthData>("wordGameAuth.waitForAuth");
+        var auth = await JS.InvokeAsync<AuthData>("tybAuth.waitForAuth");
 
         _displayName = auth?.DisplayName;
         _loading = false;
