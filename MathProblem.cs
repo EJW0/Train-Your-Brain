@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TYB_AMI//was initially TrainYourBrainApp
+namespace TYB_AMI
 {
     enum ProblemType
     {

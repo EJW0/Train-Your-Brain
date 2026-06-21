@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@inject TYB_AMI.Services.TYBAuthService AuthService
+@inject TYBAuthService AuthService
+@inherits LayoutComponentBase
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
@@ -45,4 +47,9 @@
 
         return navItems;
     }
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+    }
+}
 }

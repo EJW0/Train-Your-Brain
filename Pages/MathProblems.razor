@@ -1,3 +1,4 @@
+@inject TYBAuthService AuthService
 @page "/math"
 
 <PageTitle> Math Problems </PageTitle>
@@ -76,6 +77,13 @@ else {
                     <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
                     <h2>Score: @correctAnswers / @problems.Count</h2>
                 </div>
+                @if (_stats != null){
+                    <p>Current streak: @_stats.Streak.Current day(s)</p>
+                    
+                    @if (_stats.Games.TryGetValue("math", out var mathStats)){
+                        <p>Best score: @mathStats.BestScore</p>
+                    }
+                }
             </Content>
         </Tab>
         <Tab Title="Responses">
@@ -105,8 +113,6 @@ else {
     
 }
 
-
-
 @code {
     List<MathProblem> problems = new();
     private Modal rules = default!;
@@ -125,6 +131,7 @@ else {
     private int elapsedSeconds = 0;
     private ProgressBar progressBar = default!;
     private int? lastResponse;
+    private TYB_AMI.Services.UserStats? _stats;
 
 
     public class AnswerLog{
@@ -156,7 +163,7 @@ else {
         }
     }
 
-    private void NextProblem(){
+    private async Task NextProblem(){
         errorMessage();
         lastResponse = userAnswer;
         if (userAnswer != null){
@@ -192,6 +199,7 @@ else {
         if (currentProblemIndex >= problems.Count){
             quizFinished = true;
             cts?.Cancel();
+            _stats = await AuthService.SubmitScoreAsync("math", correctAnswers);
         }
         userAnswer = null;
         
