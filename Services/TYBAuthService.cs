@@ -16,7 +16,7 @@ namespace TYB_AMI.Services
         private string? _displayName;
 
         // Set this to your real WordPress site's REST base.
-        private const string ApiBase = "http://localhost:10004/wp-json/tyb/v1";
+        private const string ApiBase = "https://abundantminds.org/train-your-brain/wp-json/tyb/v1";
 
         public TYBAuthService(IJSRuntime js, HttpClient http)
         {
