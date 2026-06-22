@@ -28,15 +28,15 @@
         <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
         <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
 
-        <h3>Game 1</h3>
-        @if (_stats.Games.TryGetValue("game1", out var game1Stats)){
-            <p>Games played: @game1Stats.GamesPlayed</p>
-            <p>Best score: @game1Stats.BestScore</p>
+        <h3>Math stats</h3>
+        @if (_stats.Games.TryGetValue("math", out var mathStats)){
+            <p>Games played: @mathStats.GamesPlayed</p>
+            <p>Best score: @mathStats.BestScore</p>
 
-            @if (game1Stats.History.Count > 0){
+            @if (mathStats.History.Count > 0){
                 <p>Recent scores:</p>
                 <ul>
-                    @foreach (var entry in game1Stats.History.AsEnumerable().Reverse().Take(5)){
+                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(5)){
                         <li>@entry.Date — @entry.Score</li>
                     }
                 </ul>
@@ -45,8 +45,6 @@
                 <p>No games played yet.</p>
             }
         }
-
-        @* Repeat similar blocks for "math" and "game3" once those exist *@
     }
     else{
         <p>Couldn't load your stats right now.</p>
