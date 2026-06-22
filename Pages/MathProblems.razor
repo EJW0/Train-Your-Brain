@@ -79,10 +79,6 @@ else {
                 </div>
                 @if (_stats != null){
                     <p>Current streak: @_stats.Streak.Current day(s)</p>
-                    
-                    @if (_stats.Games.TryGetValue("math", out var mathStats)){
-                        <p>Best score: @mathStats.BestScore</p>
-                    }
                 }
             </Content>
         </Tab>

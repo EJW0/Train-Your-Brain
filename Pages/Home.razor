@@ -28,7 +28,7 @@
         <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
         <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
 
-        <h3>Math stats</h3>
+        <br /><h3>Math stats</h3>
         @if (_stats.Games.TryGetValue("math", out var mathStats)){
             <p>Games played: @mathStats.GamesPlayed</p>
             <p>Best score: @mathStats.BestScore</p>
