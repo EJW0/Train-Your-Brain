@@ -1,6 +1,7 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace TYB_AMI.Services
 {
@@ -27,13 +28,11 @@ namespace TYB_AMI.Services
         public bool IsAuthenticated => !string.IsNullOrEmpty(_token);
         public string? DisplayName => _displayName;
 
-        /// <summary>
-        /// Waits for the parent window to post the JWT + display name
-        /// in. Call this once during app startup (e.g. in MainLayout
+        /// Waits for the parent window to post the JWT + display name in.
+        /// Call this once during app startup (e.g. in MainLayout
         /// or App.razor), and re-use the SAME instance everywhere via
         /// dependency injection (register as Scoped) so every
         /// component sees the same token without waiting again.
-        /// </summary>
         public async Task InitializeAsync()
         {
             var auth = await _js.InvokeAsync<AuthPayload?>("tybAuth.waitForAuth");
@@ -61,7 +60,7 @@ namespace TYB_AMI.Services
         /// <summary>
         /// Call this once a single game finishes. gameId must match
         /// one of the IDs the WordPress plugin expects exactly
-        /// (e.g. "game1", "game2", "game3").
+        /// (e.g. "game1", "math", "game3").
         /// </summary>
         public async Task<UserStats?> SubmitScoreAsync(string gameId, int score)
         {
@@ -87,35 +86,58 @@ namespace TYB_AMI.Services
 
     public class UserStats
     {
+        [JsonPropertyName("streak")]
         public StreakInfo Streak { get; set; } = new();
+
+        [JsonPropertyName("daily_progress")]
         public DailyProgress DailyProgress { get; set; } = new();
+
+        [JsonPropertyName("games")]
         public Dictionary<string, GameStats> Games { get; set; } = new();
     }
 
     public class StreakInfo
     {
+        [JsonPropertyName("current")]
         public int Current { get; set; }
+
+        [JsonPropertyName("longest")]
         public int Longest { get; set; }
+
+        [JsonPropertyName("last_completed_date")]
         public string? LastCompletedDate { get; set; }
     }
 
     public class DailyProgress
     {
+        [JsonPropertyName("date")]
         public string? Date { get; set; }
+
+        [JsonPropertyName("completed_games")]
         public List<string> CompletedGames { get; set; } = new();
     }
 
     public class GameStats
     {
+        [JsonPropertyName("games_played")]
         public int GamesPlayed { get; set; }
+
+        [JsonPropertyName("best_score")]
         public int BestScore { get; set; }
+
+        [JsonPropertyName("total_score")]
         public int TotalScore { get; set; }
+
+        [JsonPropertyName("history")]
         public List<GameHistoryEntry> History { get; set; } = new();
     }
 
     public class GameHistoryEntry
     {
+        [JsonPropertyName("score")]
         public int Score { get; set; }
+
+        [JsonPropertyName("date")]
         public string Date { get; set; } = "";
     }
 }

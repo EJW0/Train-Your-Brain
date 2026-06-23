@@ -2,10 +2,6 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-body{
-    border: 1px solid blue;
-
-}
 
 h1:focus {
     outline: none;
@@ -207,6 +203,12 @@ code {
     padding: 0em 2em;
 }
 
+.memorizeHeader {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 1em;
+}
+
 .wordContainer {
     border: 1px solid rgb(206, 204, 212);
     display: flex;
@@ -215,7 +217,7 @@ code {
     justify-content: space-evenly;
     width: 80%;
     margin: auto;
-    margin-top: 2em; 
+    margin-top: 1em; 
     padding: 1em;
     border-radius: 10px;
 }
@@ -301,11 +303,49 @@ code {
 .indicatorContainer {
     /* border: 1px solid hotpink; */
     display: flex;
-
 }
 
 .indicator { 
     width: 5%;
     height: 100%;
     border-radius: 7px 0px 0px 7px;
+}
+
+.mathPanel, .memoryPanel, .stroopPanel, .streakPanel {
+    border: 1px solid rgb(104, 104, 104);
+    border-radius: 15px;
+    padding: 1em;
+    row-gap: 1em;
+}
+
+.streakPanel {
+    margin: 2em 0em;
+}
+
+.gamePanels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.mathPanel {
+    border: 1px solid rgb(208, 90, 47);
+    width: 30%;
+}
+
+.memoryPanel {
+    border: 1px solid green;
+    width: 30%;
+}
+
+.stroopPanel {
+    width: 30%;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 5em;
 }

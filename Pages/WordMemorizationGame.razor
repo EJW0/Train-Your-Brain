@@ -29,8 +29,10 @@
 else if (gameState == GameState.Memorize){
 
     <h3>Memorize These Words</h3>
-    <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
-
+    <div class="memorizeHeader">
+        <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
+        <Button Color="ButtonColor.Secondary" @onclick="SkipMemorize">Skip</Button>
+    </div>
     <ul>
         <div class="wordContainer">
             @foreach (string word in game.SelectedWords){
@@ -151,6 +153,17 @@ else if (gameState == GameState.Results){
         catch (OperationCanceledException){
         }
         timer.Dispose();
+    }
+
+    private async Task SkipMemorize(){
+        if (!cts.IsCancellationRequested){
+            cts.Cancel();
+        }
+
+        gameState = GameState.Recall;
+        cts = new CancellationTokenSource();
+        await InvokeAsync(StateHasChanged);
+        _ = RecallTimer();
     }
 
     private async Task RecallTimer(){
