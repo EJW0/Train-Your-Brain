@@ -1,0 +1,186 @@
+@page "/stroop"
+@using BlazorBootstrap
+
+<PageTitle>Stroop Test</PageTitle>
+
+@if (gameState == GameState.Loading){
+    <h3>Loading...</h3>
+}
+else if (gameState == GameState.Rules){
+    <Modal @ref="rules"
+           Title="Rules"
+           UseStaticBackdrop="true"
+           CloseOnEscape="false">
+
+        <BodyTemplate>
+            <p>Select the <strong>color</strong> of the word, not what the word says.</p>
+            <p>Complete all 50 questions as quickly and accurately as possible.</p>
+            <p>You may use either the buttons or the arrow keys.</p>
+        </BodyTemplate>
+
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+                Start Test
+            </Button>
+        </FooterTemplate>
+    </Modal>
+}
+else if (gameState == GameState.Playing)
+{
+    <div class="upperInfo">
+        <p>Question @(game.CurrentQuestion + 1) / 50</p>
+        <p>Score: @game.Score</p>
+        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    </div>
+
+    <h1 class="stroopWord" style="color:@GetCssColor(game.CurrentWord.Color)">
+        @game.CurrentWord.Text
+    </h1>
+
+    <div class="stroopButtonGroup">
+        <div class="stroopButtonGroup1">
+            <Button Color="ButtonColor.Danger"
+                    class="stroopButton"
+                    @onclick="() => Submit(StroopColor.Red)">
+                <span id="rotateText">Red</span>
+            </Button>
+            <Button Color="ButtonColor.Primary"
+                    class="stroopButton"
+                    @onclick="() => Submit(StroopColor.Blue)">
+                <span id="rotateText">Blue</span>
+            </Button>
+        </div>
+        <div class="stroopButtonGroup2">
+            <Button Color="ButtonColor.Success"
+                    class="stroopButton"
+                    @onclick="() => Submit(StroopColor.Green)">
+                <span id="rotateText">Green</span>
+            </Button>
+            <Button Color="ButtonColor.Warning"
+                    class="stroopButton"
+                    @onclick="() => Submit(StroopColor.Yellow)">
+                <span id="rotateText">Yellow</span>
+            </Button>
+        </div>
+
+    </div>
+}
+else if (gameState == GameState.Results)
+{
+    <div class="resultsContainer">
+
+        <h2>Finished!</h2>
+
+        <h3>Score: @game.Score / 50</h3>
+
+        <h3>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h3>
+
+    </div>
+}
+
+@code {
+
+    private StroopGame game = new();
+
+    private Modal rules = default!;
+
+    private bool modalShown;
+
+    private int elapsedSeconds;
+
+    private CancellationTokenSource cts = new();
+
+    private enum GameState
+    {
+        Loading,
+        Rules,
+        Playing,
+        Results
+    }
+
+    private GameState gameState = GameState.Loading;
+
+    protected override void OnInitialized()
+    {
+        game.Reset();
+
+        gameState = GameState.Rules;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !modalShown)
+        {
+            modalShown = true;
+
+            await Task.Yield();
+            await rules.ShowAsync();
+        }
+    }
+
+    private async Task CloseRules()
+    {
+        await rules.HideAsync();
+
+        elapsedSeconds = 0;
+
+        cts = new CancellationTokenSource();
+
+        gameState = GameState.Playing;
+
+        _ = RunTimer();
+    }
+
+    private async Task RunTimer()
+    {
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cts.Token))
+            {
+                elapsedSeconds++;
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+
+        timer.Dispose();
+    }
+
+    private async Task Submit(StroopColor color)
+    {
+        game.SubmitAnswer(color);
+
+        if (game.Finished)
+        {
+            cts.Cancel();
+
+            gameState = GameState.Results;
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string GetCssColor(StroopColor color)
+    {
+        return color switch
+        {
+            StroopColor.Red => "red",
+            StroopColor.Blue => "blue",
+            StroopColor.Green => "green",
+            StroopColor.Yellow => "gold",
+            _ => "black"
+        };
+    }
+
+    public void Dispose()
+    {
+        cts.Cancel();
+        cts.Dispose();
+    }
+
+}

@@ -314,8 +314,7 @@ code {
 .mathPanel, .memoryPanel, .stroopPanel, .streakPanel {
     border: 1px solid rgb(104, 104, 104);
     border-radius: 15px;
-    padding: 1em;
-    row-gap: 1em;
+    padding: 20px;
 }
 
 .streakPanel {
@@ -328,9 +327,53 @@ code {
     justify-content: space-between;
 }
 
+.panelRow1 {
+    /* border: 1px solid blue; */
+    display: flex;
+    flex-direction: row;
+}
+
+.panelRow2 {
+    /* border: 1px solid fuchsia; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 7px 4px;
+    text-align: center;
+}
+
+.panelRow3 {
+    margin: 0px -20px -20px;
+}
+
+.recentScoresTitle{
+    padding: 0px 5px; 
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.recentScoreRow {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgb(233, 227, 227);
+    margin: 0;
+    padding: 0px 15px;
+}
+
+#margin0 {
+    margin: 0;
+}
+
+.panelNum {
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 0;
+}
+
 .mathPanel {
     border: 1px solid rgb(208, 90, 47);
     width: 30%;
+    /* background: linear-gradient(-145deg, rgba(255,255,255,1) 29%,rgba(255,255,255,1) 30%,rgba(255,170,186,1) 100%); */
 }
 
 .memoryPanel {
@@ -348,4 +391,36 @@ code {
     justify-content: center;
     align-items: center;
     margin: 5em;
+}
+
+.stroopWord {
+    text-align: center;
+    margin: 2em 0em;
+}
+
+.stroopButtonGroup {
+    /* border: 1px solid magenta; */
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: auto;
+    gap: 0.5em;
+    rotate: 45deg;
+}
+
+.stroopButtonGroup1, .stroopButtonGroup2 {
+    /* border: 1px solid orange; */
+    display: flex;
+    column-gap: 0.5em;
+
+}
+
+.stroopButton {
+    width: 5em;
+    height: 5em;
+}
+
+#rotateText {
+    display: inline-block;
+    transform: rotate(-45deg);
 }

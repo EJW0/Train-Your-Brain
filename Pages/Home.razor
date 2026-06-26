@@ -25,31 +25,71 @@
         </div>
     }
     else if (_stats != null){
-        <h2>Your Stats</h2>
         <div class="streakPanel">
             <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
             <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
         </div>
+        
+        <h2>Your Stats</h2>
         <div class="gamePanels">
             <div class="mathPanel">
-            <h3>Math stats</h3>
-            @if (_stats.Games.TryGetValue("math", out var mathStats)){
-                <p>Average score: @(@mathStats.TotalScore / @mathStats.GamesPlayed)</p>
-                @if (mathStats.History.Count > 0){
+                <div class= "panelRow1">
+                    <h3>Math</h3>
+                </div>
+                @if (_stats.Games.TryGetValue("math", out var mathStats)){
+                    <div class="panelRow2">
+                        <p>Avg Score<br /><span class="panelNum">@(@mathStats.TotalScore / @mathStats.GamesPlayed)</span></p>
+                        <p>Avg Accuracy<br /><span class="panelNum">95%</span></p>
+                    </div>
+
+                    <div class="panelRow3">
+                        @if (mathStats.History.Count > 0){
+                            <p class="recentScoresTitle">Recent scores</p>
+                            @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(5)){
+                                <div class="recentScoreRow">
+                                    <p id="margin0">@entry.Date</p>
+                                    <p id="margin0">@entry.Score</p>
+                                    @{rowCount += 1;}
+                                </div>
+                            }
+                            @for (int i = 0; i<5-@rowCount; i++){
+                                <div class="recentScoreRow">
+                                    <p id="margin0">—</p>
+                                    <p id="margin0">—</p>
+                                </div>
+                            }
+                        }
+                        else{
+                            @for (int i = 0; i < 5; i++){
+                                <div class="recentScoreRow">
+                                    <p id="margin0">—</p>
+                                    <p id="margin0">—</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="memoryPanel">
+                <h3>Memory Stats</h3>
+                @if (_stats.Games.TryGetValue("memory", out var memoryStats)){
+                    <p>Average Score: @(@memoryStats.TotalScore / @memoryStats.GamesPlayed)</p>
+                    <p>Best Score: @memoryStats.BestScore</p>
+
+                    @* @if (memoryStats.History.Count > 0){
                     <p>Recent scores:</p>
                     <ul>
-                        @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(5)){
+                        @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(5)){
                             <li>@entry.Date — @entry.Score</li>
                         }
-                    </ul>
+                    </ul> *@
                 }
                 else{
                     <p>No games played yet.</p>
                 }
-            }
-            </div>
-            <div class="memoryPanel">
-                <h3>Memory stats</h3>
+
+                }
             </div>
             <div class="stroopPanel">
                 <h3>Stroop Test stats</h3>
@@ -63,6 +103,7 @@
 }
 
 @code {
+    private int rowCount = 0;
     private bool _loading = true;
     private bool _statsLoading = true;
     private TYB_AMI.Services.UserStats? _stats;
