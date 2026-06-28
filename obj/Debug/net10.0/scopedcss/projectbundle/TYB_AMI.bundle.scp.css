@@ -102,6 +102,18 @@
     [b-6cuyd145ax] .sidebarButton.active span{
         font-weight:600;
     }
+/* /Layout/Components/TopBar.razor.rz.scp.css */
+.topBar[b-35d4ztuca0] {
+    display: flex;
+    height: 10%;
+    align-items:last baseline;
+    padding: 5px 2em;
+}
+
+.greeting[b-35d4ztuca0] {
+    color: white;
+    width: fit-content;
+}
 /* /Layout/MainLayout.razor.rz.scp.css */
 .app[b-bceh9u9fql] {
     display: flex;
@@ -113,12 +125,19 @@
     background-color: #FFFCFC;
     height: 90dvh;
     margin: auto;
-    margin-bottom: 2dvh; 
-    margin-right: 2dvh;
     border-radius: 30px;
     overflow: hidden;
+    width: 100%;
+    margin-bottom: 2dvh; 
 }
 
+.rightHalf[b-bceh9u9fql] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-right: 2dvh;
+
+}
 
 
 

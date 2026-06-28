@@ -9,14 +9,6 @@
             <Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Primary" />
         </div>
     }
-    else if (AuthService.IsAuthenticated){
-        <span>Hello, @AuthService.DisplayName!</span>
-        <p>authenticated</p>
-    }
-    else{
-        <span>Hello, guest!</span>
-        <p>not authenticated</p>
-    }
 </h1>
 
 @if (!_loading && AuthService.IsAuthenticated){
@@ -62,14 +54,14 @@
                                     <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
 
                                     @if (mathStats.History.Count > 0){
-                                        @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(5)){
+                                        @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">@entry.Date</p>
                                                 <p id="margin0">@entry.Score</p>
                                                 @{rowCount += 1;}
                                             </div>
                                         }
-                                        @for (int i = 0; i<5-@rowCount; i++){
+                                        @for (int i = 0; i<3-@rowCount; i++){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">—</p>
                                                 <p id="margin0">—</p>
@@ -77,7 +69,7 @@
                                         }
                                     }
                                     else{
-                                        @for (int i = 0; i < 5; i++){
+                                        @for (int i = 0; i < 3; i++){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">—</p>
                                                 <p id="margin0">—</p>
@@ -102,14 +94,14 @@
                                     <p class="recentScoresTitle">Recent scores</p>
 
                                     @if (memoryStats.History.Count > 0){
-                                        @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(5)){
+                                        @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(3)){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">@entry.Date</p>
                                                 <p id="margin0">@entry.Score</p>
                                                 @{rowCount += 1;}
                                             </div>
                                         }
-                                        @for (int i = 0; i<5-@rowCount; i++){
+                                        @for (int i = 0; i<3-@rowCount; i++){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">—</p>
                                                 <p id="margin0">—</p>
@@ -117,7 +109,7 @@
                                         }
                                     }
                                     else{
-                                        @for (int i = 0; i < 5; i++){
+                                        @for (int i = 0; i < 3; i++){
                                             <div class="recentScoreRow">
                                                 <p id="margin0">—</p>
                                                 <p id="margin0">—</p>
@@ -180,90 +172,3 @@
         _statsLoading = false;
     }
 }
-
-
-@* @if (!_loading && AuthService.IsAuthenticated){
-    @if (_statsLoading){
-        <div class="loading">
-            <p>Loading your stats...</p>
-            <Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Primary" />
-        </div>
-    }
-    else if (_stats != null){
-        <div class="streakPanel">
-            <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
-            <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
-        </div>
-        
-        <h2>Your Stats</h2>
-        <div class="gamePanels">
-            <div class="mathPanel">
-                <div class= "panelRow1">
-                    <h3>Math</h3>
-                </div>
-                @if (_stats.Games.TryGetValue("math", out var mathStats)){
-                    <div class="panelRow2">
-                        <p>Avg Score<br /><span class="panelNum">@(@mathStats.TotalScore / @mathStats.GamesPlayed)</span></p>
-                        <p>Avg Accuracy<br /><span class="panelNum">95%</span></p>
-                    </div>
-
-                    <div class="panelRow3">
-                        @if (mathStats.History.Count > 0){
-                            <p class="recentScoresTitle">Recent scores</p>
-                            @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(5)){
-                                <div class="recentScoreRow">
-                                    <p id="margin0">@entry.Date</p>
-                                    <p id="margin0">@entry.Score</p>
-                                    @{rowCount += 1;}
-                                </div>
-                            }
-                            @for (int i = 0; i<5-@rowCount; i++){
-                                <div class="recentScoreRow">
-                                    <p id="margin0">—</p>
-                                    <p id="margin0">—</p>
-                                </div>
-                            }
-                        }
-                        else{
-                            @for (int i = 0; i < 5; i++){
-                                <div class="recentScoreRow">
-                                    <p id="margin0">—</p>
-                                    <p id="margin0">—</p>
-                                </div>
-                            }
-                        }
-                    </div>
-                }
-            </div>
-
-
-            <div class="memoryPanel">
-                <h3>Memory Stats</h3>
-                @if (_stats.Games.TryGetValue("memory", out var memoryStats)){
-                    <p>Average Score: @(@memoryStats.TotalScore / @memoryStats.GamesPlayed)</p>
-                    <p>Best Score: @memoryStats.BestScore</p>
-
-                    @if (memoryStats.History.Count > 0){
-                    <p>Recent scores:</p>
-                    <ul>
-                        @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(5)){
-                            <li>@entry.Date — @entry.Score</li>
-                        }
-                    </ul>
-                }
-                else{
-                    <p>No games played yet.</p>
-                }
-
-                }
-            </div>
-            <div class="stroopPanel">
-                <h3>Stroop Test stats</h3>
-            </div>
-        </div>
-        
-    }
-    else{
-        <p>Couldn't load your stats right now.</p>
-    }
-} *@

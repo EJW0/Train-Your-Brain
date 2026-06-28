@@ -1,20 +1,27 @@
 ﻿@using TYB_AMI.Layout.Components
 @inherits LayoutComponentBase
 @inject TYB_AMI.Services.TYBAuthService AuthService
-@inject TYBAuthService AuthService
 
 <div class="app">
-
     <SideBar />
-
-    <main class="pageContent">
-        @Body
-    </main>
+    <div class="rightHalf">
+        <TopBar />
+        <main class="pageContent">
+            @Body
+        </main>
+    </div>
 
 </div>
 
 
 
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+    }
+} 
 
 
 

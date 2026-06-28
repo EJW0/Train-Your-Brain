@@ -1,0 +1,11 @@
+.topBar {
+    display: flex;
+    height: 10%;
+    align-items:last baseline;
+    padding: 5px 2em;
+}
+
+.greeting {
+    color: white;
+    width: fit-content;
+}

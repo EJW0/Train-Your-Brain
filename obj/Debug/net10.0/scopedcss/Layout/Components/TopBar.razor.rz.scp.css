@@ -1,0 +1,11 @@
+.topBar[b-35d4ztuca0] {
+    display: flex;
+    height: 10%;
+    align-items:last baseline;
+    padding: 5px 2em;
+}
+
+.greeting[b-35d4ztuca0] {
+    color: white;
+    width: fit-content;
+}
