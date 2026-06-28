@@ -2,7 +2,6 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-
 h1:focus {
     outline: none;
 }
@@ -311,45 +310,117 @@ code {
     border-radius: 7px 0px 0px 7px;
 }
 
-.mathPanel, .memoryPanel, .stroopPanel, .streakPanel {
-    border: 1px solid rgb(104, 104, 104);
-    border-radius: 15px;
-    padding: 20px;
+.homeContainer {
+    display: flex;
+    flex-direction: column;
+    align-content:space-between;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 3em 5em;;
+}
+
+.mathPanel, .memoryPanel, .stroopPanel, .streakPanel, .calendar{
+    border-radius: 20px;
+    filter: drop-shadow(4px 4px 1px rgb(220, 225, 225));
+}
+
+#topHalf {
+    display: flex;
+    justify-content: space-between;
+    height: 45%;
+    gap: 4em;
 }
 
 .streakPanel {
-    margin: 2em 0em;
+    height: 100%;
+    width: 60%;
+    color: #FFEFEC;
+    background: linear-gradient(135deg, rgb(33, 78, 87) 0%,rgb(205, 167, 160) 100%);
+}
+
+.calendar {
+    width: 40%;
+    height: 100%;
+    background-color: rgb(207, 167, 160);
+}
+
+#bottomHalf {
+    width: 100%;
+    height: 55%;
+}
+
+.mathPanel, .memoryPanel, .stroopPanel {
+    width: 33%;
+    padding: 1em;
+}
+
+#yourPerformance {
+    margin: 0;
+    font-size: 1.3em;
+    height: 12%;
+    padding: 0px 2em;
+    margin-bottom: -0.4em;
+    margin-top: 0.5em;
 }
 
 .gamePanels {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
+    height: 88%;
+    width: 100%;
+    gap: 3em;
+}
+
+.mathPanel {
+    background: linear-gradient(to bottom, rgb(255, 198, 163) 0%,rgb(255, 178, 176) 100%);
+}
+
+.memoryPanel {
+    background: linear-gradient(to bottom, rgba(251,234,202,1) 0%,rgba(229,247,202,1) 100%);
+}
+
+.stroopPanel {
+    background: linear-gradient(to bottom, rgba(210,245,221,1) 0%,rgba(210,234,245,1) 100%);
+}
+
+.panelTitle {
+    height: 100%;
+    font-size: 2em;
+    padding: 0px 0.5em;
 }
 
 .panelRow1 {
-    /* border: 1px solid blue; */
     display: flex;
     flex-direction: row;
+    height: 20%;
 }
 
 .panelRow2 {
-    /* border: 1px solid fuchsia; */
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 7px 4px;
-    text-align: center;
+    justify-content: space-around;
+    height: 40%;
 }
 
 .panelRow3 {
-    margin: 0px -20px -20px;
+    height: 40%;
+    padding: 0px 0.5em;
+}
+
+.numDesc {
+    margin: 0;
+}
+
+.panelNum {
+    font-size: 3em;
+    text-align: center;
+    margin-top: -5px;
 }
 
 .recentScoresTitle{
     padding: 0px 5px; 
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 .recentScoreRow {
@@ -364,26 +435,7 @@ code {
     margin: 0;
 }
 
-.panelNum {
-    font-size: 3em;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-.mathPanel {
-    border: 1px solid rgb(208, 90, 47);
-    width: 30%;
-    /* background: linear-gradient(-145deg, rgba(255,255,255,1) 29%,rgba(255,255,255,1) 30%,rgba(255,170,186,1) 100%); */
-}
-
-.memoryPanel {
-    border: 1px solid green;
-    width: 30%;
-}
-
-.stroopPanel {
-    width: 30%;
-}
+/*--------------------------------------*/
 
 .loading {
     display: flex;

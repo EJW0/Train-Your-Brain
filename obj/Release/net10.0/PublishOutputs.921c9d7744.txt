@@ -1,4 +1,0 @@
-/home/snsc/Blazor webapps/TYB_AMI/published/wwwroot/index.html
-/home/snsc/Blazor webapps/TYB_AMI/published/TYB_AMI.runtimeconfig.json
-/home/snsc/Blazor webapps/TYB_AMI/published/dotnet.js
-/home/snsc/Blazor webapps/TYB_AMI/published/web.config

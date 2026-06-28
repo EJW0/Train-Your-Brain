@@ -1,8 +1,33 @@
-﻿@inject TYB_AMI.Services.TYBAuthService AuthService
-@inject TYBAuthService AuthService
+﻿@using TYB_AMI.Layout.Components
 @inherits LayoutComponentBase
+@inject TYB_AMI.Services.TYBAuthService AuthService
+@inject TYBAuthService AuthService
 
-<BlazorBootstrapLayout StickyHeader="true">
+<div class="app">
+
+    <SideBar />
+
+    <main class="pageContent">
+        @Body
+    </main>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <ThemeSwitcher Class="ps-3 ps-lg-2" />
     </HeaderSection>
@@ -19,9 +44,9 @@
         @Body
     </ContentSection>
 
-    @* <FooterSection>
+    <FooterSection>
         Footer links...
-    </FooterSection> *@
+    </FooterSection> 
 </BlazorBootstrapLayout>
 
 @code {
@@ -52,4 +77,4 @@
     {
         await AuthService.InitializeAsync();
     }
-}
+} *@

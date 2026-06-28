@@ -56,6 +56,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/snsc/Blazor webapps/TYB_AMI/Layout/Components/SideBar.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L0NvbXBvbmVudHMvU2lkZUJhci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-6cuyd145ax
+
 [/home/snsc/Blazor webapps/TYB_AMI/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L01haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-bceh9u9fql

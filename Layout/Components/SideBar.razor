@@ -1,0 +1,56 @@
+@namespace TYB_AMI.Layout.Components
+@using BlazorBootstrap
+
+<div class="sideBar">
+    <div class="sidebar-logo">
+        @* <img src="logo.png" alt="Train Your Brain Logo" /> *@
+        logo
+    </div>
+
+    <nav class="sidebarNav">
+        <NavLink href="/daily" class="dailyButton">
+            <strong>Day 1</strong>
+        </NavLink>
+        <NavLink href="/" Match="NavLinkMatch.All" class="sidebarButton" draggable="false">
+            <div class="iconCircle">
+                <i class="bi bi-house-door-fill"></i>
+            </div>
+            <span>Home</span>
+        </NavLink>
+
+        <NavLink href="/stats" class="sidebarButton" ActiveClass="active" draggable="false">
+            <div class="iconCircle">
+                <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <span>Stats</span>
+        </NavLink>
+
+        <NavLink href="/practice" class="sidebarButton" ActiveClass="active" draggable="false">
+            <div class="iconCircle">
+                <i class="bi bi-lightning-fill"></i>
+            </div>
+            <span>Practice</span>
+        </NavLink>
+
+        <NavLink href="/resources" class="sidebarButton" ActiveClass="active" draggable="false">
+            <div class="iconCircle">
+                <i class="bi bi-book-half"></i>
+            </div>
+            <span>Resources</span>
+        </NavLink>
+
+        @* <NavLink href="/math" class="sidebarButton" ActiveClass="active">
+            Math
+        </NavLink>
+
+        <NavLink href="/wordmemory" class="sidebarButton" ActiveClass="active">
+            Word Memory
+        </NavLink>
+
+        <NavLink href="/stroop" class="sidebarButton">
+            Stroop
+        </NavLink> *@
+
+    </nav>
+
+</div>
