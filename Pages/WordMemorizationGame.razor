@@ -9,7 +9,8 @@
     <Modal @ref="rules"
        Title="Rules"
        UseStaticBackdrop="true"
-       CloseOnEscape="false">
+       CloseOnEscape="false"
+       IsVerticallyCentered="true">
 
     <BodyTemplate>
         <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
@@ -55,7 +56,7 @@ else if (gameState == GameState.Recall){
         </div>
     </EditForm>
 
-    <div class="responsesContainer" style="height: 50vh; margin-top:2em">
+    <div class="responsesContainer memoryResponsesContainer" >
         @foreach (var word in game.UserWords){
             <p class="responses" style="padding: 1em;">@word</p>
         }
@@ -99,7 +100,7 @@ else if (gameState == GameState.Results){
             <Content>
                 <div class="resultsContainer">
                     <h3>Word Memorization Responses</h3>
-                    <div class="responsesContainer" style="margin-top:2em; height: 60vh">
+                    <div class="responsesContainer memoryResponses">
                         @foreach (var word in game.UserWords){
                             <p class="responses" style="padding: 1em;">@word</p>
                         }

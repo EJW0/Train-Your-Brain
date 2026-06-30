@@ -219,6 +219,7 @@ code {
     margin-top: 1em; 
     padding: 1em;
     border-radius: 10px;
+    user-select: none;
 }
 
 .containerItem {
@@ -260,8 +261,7 @@ code {
     margin: auto;
 }
 
-.responsesContainer {
-    /* border: 1px solid firebrick; */
+.responsesContainer, .memoryResponsesContainer{
     display: flex;
     flex-direction: column;
     list-style-type: none;
@@ -274,9 +274,20 @@ code {
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    height: 25rem; 
 }
 
-.responses {
+.memoryResponsesContainer {
+    height: 50vh; 
+    margin-top:2em;
+}
+
+.memoryResponses {
+    margin-top:2em; 
+    height: 55vh
+}
+
+.responses, .mathResponses {
     border: 1px solid rgb(206, 204, 212);
     border-radius: 10px;
     text-align: center;
@@ -284,6 +295,12 @@ code {
     align-items: center;
     font-size: 1.2em;
     /* rotate: 180deg; */
+}
+
+.mathResponses {
+    display: flex; 
+    width: 95%; 
+    height: 100%; margin-bottom: 1em;
 }
 
 .progressBar {
@@ -468,11 +485,54 @@ code {
 }
 
 .stroopButton {
+    border: none;
     width: 5em;
     height: 5em;
+    background-color: rgb(242, 240, 240);
 }
+    .stroopRed:active {
+        background-color: rgb(233, 203, 203);
+    }
+    .stroopBlue:active {
+        background-color: rgb(211, 223, 237);
+    }
+    .stroopGreen:active {
+        background-color: rgb(206, 230, 208);
+    }
+    .stroopYellow:active {
+        background-color: rgb(239, 234, 211);
+    }
+    
 
 #rotateText {
     display: inline-block;
     transform: rotate(-45deg);
 }
+
+.flash-reset { animation: none; }
+
+@keyframes flood-red {
+    0%   { background-color: rgb(233, 215, 215); }
+    30%  { background-color: #e55535; }
+    100% { background-color: rgb(242, 240, 240); }
+}
+@keyframes flood-blue {
+    0%   { background-color: rgb(216, 225, 236); }
+    30%  { background-color: #1590f5; }
+    100% { background-color: rgb(242, 240, 240); }
+}
+@keyframes flood-green {
+    0%   { background-color: rgb(208, 229, 210); }
+    30%  { background-color: #23d157; }
+    100% { background-color: rgb(242, 240, 240); }
+}
+@keyframes flood-yellow {
+    0%   { background-color: rgb(236, 233, 217); }
+    30%  { background-color: #fdbe35; }
+    100% { background-color: rgb(242, 240, 240); }
+}
+
+.flash-red    { animation: flood-red    0.4s ease forwards; }
+.flash-blue   { animation: flood-blue   0.4s ease forwards; }
+.flash-green  { animation: flood-green  0.4s ease forwards; }
+.flash-yellow { animation: flood-yellow 0.4s ease forwards; }

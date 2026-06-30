@@ -6,7 +6,8 @@
 <Modal @ref="rules"
        Title="Rules"
        UseStaticBackdrop="true"
-       CloseOnEscape="false">
+       CloseOnEscape="false"
+       IsVerticallyCentered="true">
 
     <BodyTemplate>
         <p>Solve all 50 math problems as quickly and accurately as possible.</p>
@@ -86,16 +87,16 @@ else {
             <Content>
                 <div class="resultsContainer">
                     <h3>Answer History</h3>
-                    <div class="responsesContainer" style="height: 60vh; margin-top:1em">
+                    <div class="responsesContainer" style="margin-top:1em">
                         @foreach (var item in history){
                             if (item.IsCorrect == true){
-                                <div class="responses" style="display: flex; width: 95%; height: 100%; margin-bottom: 1em">
+                                <div class="responses mathResponses">
                                     <div class="indicator" style="background: #80F74D;"></div>
                                     <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
                                 </div>
                             }
                             else{
-                                <div class="responses" style="display: flex; width: 95%; height: 100%; margin-bottom: 1em">
+                                <div class="responses mathResponses">
                                     <div class="indicator" style="background: #FF0258"></div>
                                     <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
                                 </div>
