@@ -1,5 +1,6 @@
 @page "/stroop"
 @using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Stroop Test</PageTitle>
 
@@ -28,36 +29,41 @@ else if (gameState == GameState.Rules){
 }
 else if (gameState == GameState.Playing)
 {
-    <div class="upperInfo">
-        <p>Question @(game.CurrentQuestion + 1) / 50</p>
-        <p>Score: @game.Score</p>
-        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
-    </div>
-
-    <h1 class="stroopWord" style="color:@GetCssColor(game.CurrentWord.Color)">
-        @game.CurrentWord.Text
-    </h1>
-
-    <div class="stroopButtonGroup">
-        <div class="stroopButtonGroup1">
-            <button class="stroopButton stroopRed @GetFlashClass(StroopColor.Red)"
-                    @onclick="() => Submit(StroopColor.Red)">
-                <span id="rotateText">Red</span>
-            </button>
-            <button class="stroopButton stroopBlue @GetFlashClass(StroopColor.Blue)"
-                    @onclick="() => Submit(StroopColor.Blue)">
-                <span id="rotateText">Blue</span>
-            </button>
+    <div class="stroopGame"
+     tabindex="0"
+     @ref="gameArea"
+     @onkeydown="HandleKeyDown">
+        <div class="upperInfo">
+            <p>Question @(game.CurrentQuestion + 1) / 50</p>
+            <p>Score: @game.Score</p>
+            <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
         </div>
-        <div class="stroopButtonGroup2">
-            <button class="stroopButton stroopGreen @GetFlashClass(StroopColor.Green)"
-                    @onclick="() => Submit(StroopColor.Green)">
-                <span id="rotateText">Green</span>
-            </button>
-            <button class="stroopButton stroopYellow @GetFlashClass(StroopColor.Yellow)"
-                    @onclick="() => Submit(StroopColor.Yellow)">
-                <span id="rotateText">Yellow</span>
-            </button>
+
+        <h1 class="stroopWord" style="color:@GetCssColor(game.CurrentWord.Color)">
+            @game.CurrentWord.Text
+        </h1>
+
+        <div class="stroopButtonGroup">
+            <div class="stroopButtonGroup1">
+                <button class="stroopButton stroopRed @GetFlashClass(StroopColor.Red)"
+                        @onclick="() => Submit(StroopColor.Red)">
+                    <span id="rotateText">Red</span>
+                </button>
+                <button class="stroopButton stroopBlue @GetFlashClass(StroopColor.Blue)"
+                        @onclick="() => Submit(StroopColor.Blue)">
+                    <span id="rotateText">Blue</span>
+                </button>
+            </div>
+            <div class="stroopButtonGroup2">
+                <button class="stroopButton stroopGreen @GetFlashClass(StroopColor.Green)"
+                        @onclick="() => Submit(StroopColor.Green)">
+                    <span id="rotateText">Green</span>
+                </button>
+                <button class="stroopButton stroopYellow @GetFlashClass(StroopColor.Yellow)"
+                        @onclick="() => Submit(StroopColor.Yellow)">
+                    <span id="rotateText">Yellow</span>
+                </button>
+            </div>
         </div>
     </div>
 }
@@ -73,6 +79,7 @@ else if (gameState == GameState.Results)
 @code {
 
     private StroopGame game = new();
+    private ElementReference gameArea;
     private Modal rules = default!;
     private bool modalShown;
     private int elapsedSeconds;
@@ -97,10 +104,14 @@ else if (gameState == GameState.Results)
 
     private async Task CloseRules(){
         await rules.HideAsync();
+
         elapsedSeconds = 0;
         cts = new CancellationTokenSource();
         gameState = GameState.Playing;
+
         _ = RunTimer();
+        await InvokeAsync(StateHasChanged);
+        await gameArea.FocusAsync();
     }
 
     private async Task RunTimer(){
@@ -116,32 +127,34 @@ else if (gameState == GameState.Results)
     }
 
     private async Task Submit(StroopColor color){
+        Console.WriteLine($"Submit: {color}, Question = {game.CurrentQuestion}");
         bool isCorrect = color == game.CurrentWord.Color;
-
         game.SubmitAnswer(color);
-
-        if (isCorrect && !game.Finished){
-            if (_flashColor == color){
-                _flashColor = null;
-                _resetting = true;
-                await InvokeAsync(StateHasChanged);
-                await Task.Delay(16);
-                _resetting = false;
-            }
-
-            _flashColor = color;
-            await InvokeAsync(StateHasChanged);
-
-            await Task.Delay(600);
-
-            _flashColor = null;
-            await InvokeAsync(StateHasChanged);
-        }
 
         if (game.Finished){
             cts.Cancel();
             _flashColor = null;
             gameState = GameState.Results;
+
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (isCorrect){
+            if (_flashColor == color){
+                _flashColor = null;
+                _resetting = true;
+
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(16);
+
+                _resetting = false;
+            }
+
+            _flashColor = color;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(600);
+            _flashColor = null;
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -173,4 +186,24 @@ else if (gameState == GameState.Results)
         StroopColor.Yellow => "yellow",
         _ => ""
     };
+    private async Task HandleKeyDown(KeyboardEventArgs e){
+        if (e.Repeat)
+            return;
+        if (gameState != GameState.Playing)
+            return;
+        switch (e.Key){
+            case "ArrowUp":
+                await Submit(StroopColor.Red);
+                break;
+            case "ArrowLeft":
+                await Submit(StroopColor.Green);
+                break;
+            case "ArrowRight":
+                await Submit(StroopColor.Blue);
+                break;
+            case "ArrowDown":
+                await Submit(StroopColor.Yellow);
+                break;
+        }
+    }
 }
