@@ -16,7 +16,7 @@ else if (gameState == GameState.Rules){
 
         <BodyTemplate>
             <p>Select the <strong>color</strong> of the word, not what the word says.</p>
-            <p>Complete all 50 questions as quickly and accurately as possible.</p>
+            <p>Get through all 50 words as quickly and accurately as possible.</p>
             <p>You may use either the buttons or the arrow keys.</p>
         </BodyTemplate>
 
@@ -34,7 +34,7 @@ else if (gameState == GameState.Playing)
      @ref="gameArea"
      @onkeydown="HandleKeyDown">
         <div class="upperInfo">
-            <p>Question @(game.CurrentQuestion + 1) / 50</p>
+            <p>Progress @(game.CurrentQuestion) / 50</p>
             <p>Score: @game.Score</p>
             <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
         </div>
