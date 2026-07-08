@@ -19,6 +19,16 @@
         </div>
     }
     else if (_stats != null){
+        @* <p>Training day: <strong>@_stats.CycleDay</strong> / 8</p>
+        <p>
+            Today's required games:
+            @if (_stats.CycleDay == 1 || _stats.CycleDay == 8){
+                <strong>Stroop + Memory</strong>
+            }
+            else{
+                <strong>Math</strong>
+            }
+        </p> *@
         <div class=homeContainer>
                 <div id="topHalf">
                     <div class="streakPanel">
@@ -42,7 +52,12 @@
                                 <div class="panelRow2">
                                     <div class="panelHalf1">
                                         <p class="numDesc" id="mathAvg">Avg Score</p>
-                                        <p class="panelNum" id="mathNum">@(@mathStats.TotalScore / @mathStats.GamesPlayed)</p>
+                                        @if (@mathStats.GamesPlayed != 0){
+                                            <p class="panelNum" id="mathNum">@(@mathStats.TotalScore / @mathStats.GamesPlayed)</p>
+                                        }
+                                        else{
+                                            <p class="panelNum" id="mathNum">—</p>
+                                        }
                                     </div>
                                     <div class="panelHalf2">
                                         <p class="numDesc" id="mathAvg">Avg Accuracy</p>
@@ -86,8 +101,22 @@
                             </div>
                             @if (_stats.Games.TryGetValue("memory", out var memoryStats)){
                                 <div class="panelRow2">
-                                    <p>Avg Score<br /><span class="panelNum">@(@memoryStats.TotalScore / @memoryStats.GamesPlayed)</span></p>
-                                    <p>Best Score<br /><span class="panelNum">@memoryStats.BestScore</span></p>
+                                    <div class="panelHalf1">
+                                        <p class="numDesc" id="memoryAvg">Avg Score</p>
+                                            @if (@memoryStats.GamesPlayed != 0){
+                                                <p class="panelNum" id="memoryNum">@(@memoryStats.TotalScore / @memoryStats.GamesPlayed)</p>
+                                                
+                                            }
+                                            else{
+                                                <p class="panelNum" id="memoryNum">—</p>
+                                            }
+                                        <p>Best Score<br /><span class="panelNum">@memoryStats.BestScore</span></p>
+                                            
+                                    </div>
+                                    <div class="panelHalf2">
+                                        <p class="numDesc" id="mathAvg">Avg Accuracy</p>
+                                        <p class="panelNum" id="mathNum">—%</p>
+                                    </div>
                                 </div>
 
                                 <div class="panelRow3">

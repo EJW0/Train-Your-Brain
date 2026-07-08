@@ -1,6 +1,7 @@
 @page "/stroop"
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Web
+@inject TYB_AMI.Services.TYBAuthService AuthService
 
 <PageTitle>Stroop Test</PageTitle>
 
@@ -87,6 +88,7 @@ else if (gameState == GameState.Results)
     private CancellationTokenSource cts = new();
     private StroopColor? _flashColor = null;
     private GameState gameState = GameState.Loading;
+    private TYB_AMI.Services.UserStats? _stats;
     private enum GameState { Loading, Rules, Playing, Results }
 
     protected override void OnInitialized(){
@@ -134,7 +136,9 @@ else if (gameState == GameState.Results)
         if (game.Finished){
             cts.Cancel();
             _flashColor = null;
-            gameState = GameState.Results;
+            gameState = GameState.Results; 
+            _stats = await AuthService.SubmitScoreAsync("stroop", game.Score);
+            AuthService.NotifyStatsChanged();
 
             await InvokeAsync(StateHasChanged);
             return;

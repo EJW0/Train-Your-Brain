@@ -27,6 +27,9 @@ namespace TYB_AMI.Services
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(_token);
         public string? DisplayName => _displayName;
+        public event Action? OnStatsChanged;
+        public void NotifyStatsChanged() => OnStatsChanged?.Invoke();
+
 
         /// Waits for the parent window to post the JWT + display name in.
         /// Call this once during app startup (e.g. in MainLayout
@@ -77,17 +80,25 @@ namespace TYB_AMI.Services
             return await response.Content.ReadFromJsonAsync<UserStats>();
         }
 
-        private class AuthPayload
-        {
+        private class AuthPayload{
             public string? Token { get; set; }
             public string? DisplayName { get; set; }
         }
+
+        public static List<string> RequiredGamesForCycleDay(int cycleDay){
+        if (cycleDay == 1 || cycleDay == 8)
+            return new List<string> { "stroop", "memory" };
+        return new List<string> { "math" };
+    }
     }
 
     public class UserStats
     {
         [JsonPropertyName("streak")]
         public StreakInfo Streak { get; set; } = new();
+        
+        [JsonPropertyName("cycle_day")]
+        public int CycleDay { get; set; }
 
         [JsonPropertyName("daily_progress")]
         public DailyProgress DailyProgress { get; set; } = new();

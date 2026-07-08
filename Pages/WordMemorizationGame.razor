@@ -206,6 +206,7 @@ else if (gameState == GameState.Results){
             cts.Cancel();
         }
         _stats = await AuthService.SubmitScoreAsync("memory", game.Score);
+        AuthService.NotifyStatsChanged();
         await InvokeAsync(StateHasChanged);
     }
 

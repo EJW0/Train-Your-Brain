@@ -1,4 +1,8 @@
 @namespace TYB_AMI.Layout.Components
+@inject TYB_AMI.Services.TYBAuthService AuthService
+@implements IDisposable
+@inject HttpClient Http
+
 @using BlazorBootstrap
 
 <div class="sideBar">
@@ -8,9 +12,21 @@
     </div>
 
     <nav class="sidebarNav">
-        <NavLink href="/daily" class="dailyButton">
-            <strong>Day 1</strong>
+        <NavLink class="dailyButton">
+            <strong><p class="dayCounter">Day @(_stats?.CycleDay.ToString() ?? "—")<br /></p></strong>
+            @if (_todayComplete){
+                <p class="countdown">@_countdownDisplay</p>
+            }
+            
         </NavLink>
+        @if (!_todayComplete){
+            <NavLink href="/daily" class="specialDayButton" draggable="false">
+                <div class="dayIconCircle">
+                    <i class="bi bi-play-fill"></i>
+                </div>
+                <span>Begin Day @(_stats?.CycleDay.ToString() ?? "—")</span>
+            </NavLink>
+        }
         <NavLink href="/" Match="NavLinkMatch.All" class="sidebarButton" draggable="false">
             <div class="iconCircle">
                 <i class="bi bi-house-door-fill"></i>
@@ -42,3 +58,122 @@
     </nav>
 
 </div>
+@code {
+    private TYB_AMI.Services.UserStats? _stats;
+    private bool _todayComplete = false;
+    private string _countdownDisplay = "";
+    private System.Timers.Timer? _countdownTimer;
+    private int _secondsRemaining = 0;
+    private string _serverDate = "";
+
+    protected override async Task OnInitializedAsync(){
+        AuthService.OnStatsChanged += OnStatsUpdated;
+        for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++){
+            await Task.Delay(100);
+        }
+
+        if (AuthService.IsAuthenticated){
+            _stats = await AuthService.GetStatsAsync();
+            await FetchSecondsUntilMidnight();
+            UpdateTodayComplete();
+            StartCountdownTimer();
+            StateHasChanged();
+        }
+    }
+
+    private async Task FetchSecondsUntilMidnight(){
+        try{
+            var response = await Http.GetAsync("https://abundantminds.org/wp-json/tyb/v1/time");
+            if (response.IsSuccessStatusCode){
+                var data = await response.Content.ReadFromJsonAsync<TimeResponse>();
+                _secondsRemaining = data?.SecondsUntilMidnight ?? 0;
+                _serverDate       = data?.ServerDate ?? "";    // ← new
+            }
+        }
+        catch{
+            _secondsRemaining = 0;
+            _serverDate       = "";
+        }
+    }
+
+    private void UpdateTodayComplete(){
+        if (_stats == null || string.IsNullOrEmpty(_serverDate)){
+            _todayComplete = false;
+            return;
+        }
+        var progress = _stats.DailyProgress;
+        var required = TYB_AMI.Services.TYBAuthService
+                        .RequiredGamesForCycleDay(_stats.CycleDay);
+
+        // All three conditions must be true:
+        // 1. daily_progress.date matches TODAY on the server (not just
+        //    any date — this is what was missing before, causing the
+        //    "stuck on complete" bug when returning the next day)
+        // 2. last_completed_date also matches today (meaning the cycle
+        //    actually completed today, not on a previous day)
+        // 3. All required games for the current cycle day are present
+        //    in completed_games
+        _todayComplete =
+            progress.Date == _serverDate &&
+            _stats.Streak.LastCompletedDate == _serverDate &&
+            required.All(g => progress.CompletedGames.Contains(g));
+    }
+
+
+    private void StartCountdownTimer(){
+        _countdownTimer?.Dispose();
+        _countdownTimer = new System.Timers.Timer(1000);
+        _countdownTimer.Elapsed += (_, _) =>
+        {
+            if (_secondsRemaining > 0){
+                _secondsRemaining--;
+            }
+
+            if (_secondsRemaining <= 0 && _todayComplete){
+                // Server midnight hit — new day has opened
+                _todayComplete = false;
+                _secondsRemaining = 0;
+            }
+
+            UpdateCountdownDisplay();
+            InvokeAsync(StateHasChanged);
+        };
+        _countdownTimer.Start();
+        UpdateCountdownDisplay();
+    }
+
+    private void UpdateCountdownDisplay(){
+        if (!_todayComplete || _secondsRemaining <= 0){
+            _countdownDisplay = "";
+            return;
+        }
+
+        int hours   = _secondsRemaining / 3600;
+        int minutes = (_secondsRemaining % 3600) / 60;
+        int seconds = _secondsRemaining % 60;
+
+        _countdownDisplay = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
+    }
+
+    private async void OnStatsUpdated(){
+        _stats = await AuthService.GetStatsAsync();
+        await FetchSecondsUntilMidnight();
+        UpdateTodayComplete();
+        UpdateCountdownDisplay();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose(){
+        AuthService.OnStatsChanged -= OnStatsUpdated;
+        _countdownTimer?.Dispose();
+    }
+
+    private class TimeResponse{
+        [System.Text.Json.Serialization.JsonPropertyName("seconds_until_midnight")]
+        public int SecondsUntilMidnight { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("server_date")]
+        public string ServerDate { get; set; } = "";    // ← new
+    }
+
+
+}

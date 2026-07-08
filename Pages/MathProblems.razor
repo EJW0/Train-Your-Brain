@@ -197,6 +197,7 @@ else {
             quizFinished = true;
             cts?.Cancel();
             _stats = await AuthService.SubmitScoreAsync("math", correctAnswers);
+            AuthService.NotifyStatsChanged();
         }
         userAnswer = null;
         

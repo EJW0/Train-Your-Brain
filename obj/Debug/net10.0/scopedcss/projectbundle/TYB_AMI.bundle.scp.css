@@ -36,7 +36,16 @@
     object-fit: contain;
 }
 
+.dayCounter[b-6cuyd145ax] {
+    margin: 0;
+    padding: 0;
+}
+
 [b-6cuyd145ax] .dailyButton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     border-top: 0.5px solid #fef9f8;
     border-bottom: 0.5px solid #fef9f8;
     background: linear-gradient(-35deg, rgb(207, 167, 160) 0%,rgb(20, 83, 94) 90%);
@@ -46,10 +55,10 @@
     font-size: 1.5em;
     width: 100%;
     height: 100%;
-    padding: 10px;
+    padding: 0px;
 }
 
-[b-6cuyd145ax] .sidebarButton {
+[b-6cuyd145ax] .sidebarButton, [b-6cuyd145ax] .specialDayButton{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,7 +70,7 @@
     margin-top: 0em;
 }
     
-    [b-6cuyd145ax] .iconCircle{
+    [b-6cuyd145ax] .iconCircle, [b-6cuyd145ax] .dayIconCircle {
         width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -70,38 +79,54 @@
         justify-content:center;
         transition: .55s;
     }
-    [b-6cuyd145ax] .iconCircle i{
+
+    [b-6cuyd145ax] .dayIconCircle {
+        background: linear-gradient(-35deg, rgb(242, 200, 193) 0%,rgb(20, 83, 94) 90%);
+    }
+
+    [b-6cuyd145ax] .iconCircle, [b-6cuyd145ax] .dayIconCircle i{
         font-size:1.5rem;
         color: #FFEFEC;
         transition:.55s;
     }
 
-    [b-6cuyd145ax] .sidebarButton span{
+    [b-6cuyd145ax] .sidebarButton, [b-6cuyd145ax] .specialDayButton span{
         font-size: 0.9rem;
         font-weight:500;
         color:#FFEFEC;
         transition:.25s;
     }
 
-    [b-6cuyd145ax] .sidebarButton:hover .iconCircle{
+    [b-6cuyd145ax] .sidebarButton:hover .iconCircle, [b-6cuyd145ax] .specialDayButton:hover .dayIconCircle{
         background:white;
     }
 
-    [b-6cuyd145ax] .sidebarButton:hover .iconCircle i{
+    [b-6cuyd145ax] .sidebarButton:hover .iconCircle, [b-6cuyd145ax] .specialDayButton:hover .dayIconCircle i{
         color:#446763;
     }
 
-    [b-6cuyd145ax] .sidebarButton.active .iconCircle{
+    [b-6cuyd145ax] .sidebarButton.active .iconCircle, [b-6cuyd145ax] .specialDayButton.active .dayIconCircle{
         background:white;
     }
 
-    [b-6cuyd145ax] .sidebarButton.active .iconCircle i{
+    [b-6cuyd145ax] .sidebarButton.active .iconCircle, [b-6cuyd145ax] .specialDayButton.active .dayIconCircle i{
         color:#446763;
     }
 
-    [b-6cuyd145ax] .sidebarButton.active span{
+    [b-6cuyd145ax] .sidebarButton.active, [b-6cuyd145ax] .specialDayButton.active span{
         font-weight:600;
     }
+
+.beginExercise[b-6cuyd145ax] {
+    font-size: 0.8em;
+    margin: 0;
+    padding: 0;
+}
+
+.countdown[b-6cuyd145ax] {
+    margin: 0;
+    padding: 0;
+}
 /* /Layout/Components/TopBar.razor.rz.scp.css */
 .topBar[b-35d4ztuca0] {
     display: flex;
