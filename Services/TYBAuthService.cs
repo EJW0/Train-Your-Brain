@@ -105,6 +105,9 @@ namespace TYB_AMI.Services
 
         [JsonPropertyName("games")]
         public Dictionary<string, GameStats> Games { get; set; } = new();
+        
+        [JsonPropertyName("completed_dates")]
+        public List<string> CompletedDates { get; set; } = new();       
     }
 
     public class StreakInfo

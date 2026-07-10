@@ -1,5 +1,7 @@
 ﻿@page "/"
 @inject TYB_AMI.Services.TYBAuthService AuthService
+@implements IDisposable
+@using Radzen
 
 <PageTitle>Home</PageTitle>
 <h1>
@@ -10,6 +12,14 @@
         </div>
     }
 </h1>
+@* <div class="calendar">
+                    <RadzenDatePicker
+                        Inline="true"
+                        DateRender="@OnDateRender"
+                        ReadOnly="true"
+                        ShowCalendarWeek="false"
+                        TValue="DateTime?" />
+</div> *@
 
 @if (!_loading && AuthService.IsAuthenticated){
     @if (_statsLoading){
@@ -19,158 +29,162 @@
         </div>
     }
     else if (_stats != null){
-        @* <p>Training day: <strong>@_stats.CycleDay</strong> / 8</p>
-        <p>
-            Today's required games:
-            @if (_stats.CycleDay == 1 || _stats.CycleDay == 8){
-                <strong>Stroop + Memory</strong>
-            }
-            else{
-                <strong>Math</strong>
-            }
-        </p> *@
         <div class=homeContainer>
-                <div id="topHalf">
-                    <div class="streakPanel">
-                        <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
-                        <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
-                    </div>
-
-                    <div class="calendar">
-                        calendar
+            <div id="topHalf">
+                <div class="streakPanel">
+                    <p>Current streak: <strong>@_stats.Streak.Current</strong> day(s)</p>
+                    <p>Longest streak: <strong>@_stats.Streak.Longest</strong> day(s)</p>
+                    <NavLink href="/daily" class="btn btn-primary">
+                        View Today's Training
+                    </NavLink>
+                    <div style="font-size: 0.8em; margin-top: 1em; color: rgb(255, 255, 255);">
+                        <p>Fully completed dates: @string.Join(", ", _fullyCompletedDates)</p>
+                        <p>Stats loaded: @(_stats != null)</p>
+                        <p>Calendar key: @_calendarKey</p>
                     </div>
                 </div>
+
+                <div class="calendar">
+                    <RadzenDatePicker
+                        @key="_calendarKey"
+                        Inline="true"
+                        DateRender="@OnDateRender"
+                        ReadOnly="true"
+                        ShowCalendarWeek="false"
+                        TValue="DateTime?" />
                 
-                <div id="bottomHalf">
-                    <p id="yourPerformance">Your Performance</P>
-                    <div class="gamePanels">
-                        <div class="mathPanel">
-                            <div class= "panelRow1">
-                                <p class="panelTitle" id="mathText">Math</p>
-                            </div>
-                            @if (_stats.Games.TryGetValue("math", out var mathStats)){
-                                <div class="panelRow2">
-                                    <div class="panelHalf1">
-                                        <p class="numDesc" id="mathAvg">Avg Score</p>
-                                        @if (@mathStats.GamesPlayed != 0){
-                                            <p class="panelNum" id="mathNum">@(@mathStats.TotalScore / @mathStats.GamesPlayed)</p>
-                                        }
-                                        else{
-                                            <p class="panelNum" id="mathNum">—</p>
-                                        }
-                                    </div>
-                                    <div class="panelHalf2">
-                                        <p class="numDesc" id="mathAvg">Avg Accuracy</p>
-                                        <p class="panelNum" id="mathNum">—%</p>
-                                    </div>
-                                </div>
-
-                                <div class="panelRow3">
-                                    <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
-
-                                    @if (mathStats.History.Count > 0){
-                                        @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">@entry.Date</p>
-                                                <p id="margin0">@entry.Score</p>
-                                                @{rowCount += 1;}
-                                            </div>
-                                        }
-                                        @for (int i = 0; i<3-@rowCount; i++){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">—</p>
-                                                <p id="margin0">—</p>
-                                            </div>
-                                        }
-                                    }
-                                    else{
-                                        @for (int i = 0; i < 3; i++){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">—</p>
-                                                <p id="margin0">—</p>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            }
+                </div>
+            
+            </div>
+            
+            <div id="bottomHalf">
+                <p id="yourPerformance">Your Performance</P>
+                <div class="gamePanels">
+                    <div class="mathPanel">
+                        <div class="panelRow1">
+                            <p class="panelTitle" id="mathText">Math</p>
                         </div>
-
-                        <div class="memoryPanel">                    
-                            <div class= "panelRow1">
-                                <h3>Memory</h3>
-                            </div>
-                            @if (_stats.Games.TryGetValue("memory", out var memoryStats)){
-                                <div class="panelRow2">
-                                    <div class="panelHalf1">
-                                        <p class="numDesc" id="memoryAvg">Avg Score</p>
-                                            @if (@memoryStats.GamesPlayed != 0){
-                                                <p class="panelNum" id="memoryNum">@(@memoryStats.TotalScore / @memoryStats.GamesPlayed)</p>
-                                                
-                                            }
-                                            else{
-                                                <p class="panelNum" id="memoryNum">—</p>
-                                            }
-                                        <p>Best Score<br /><span class="panelNum">@memoryStats.BestScore</span></p>
-                                            
-                                    </div>
-                                    <div class="panelHalf2">
-                                        <p class="numDesc" id="mathAvg">Avg Accuracy</p>
-                                        <p class="panelNum" id="mathNum">—%</p>
-                                    </div>
-                                </div>
-
-                                <div class="panelRow3">
-                                    <p class="recentScoresTitle">Recent scores</p>
-
-                                    @if (memoryStats.History.Count > 0){
-                                        @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(3)){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">@entry.Date</p>
-                                                <p id="margin0">@entry.Score</p>
-                                                @{rowCount += 1;}
-                                            </div>
-                                        }
-                                        @for (int i = 0; i<3-@rowCount; i++){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">—</p>
-                                                <p id="margin0">—</p>
-                                            </div>
-                                        }
-                                    }
-                                    else{
-                                        @for (int i = 0; i < 3; i++){
-                                            <div class="recentScoreRow">
-                                                <p id="margin0">—</p>
-                                                <p id="margin0">—</p>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            }
-                        </div>
-
-                        <div class="stroopPanel">                    
-                            <div class= "panelRow1">
-                                <h3>Stroop Test</h3>
-                            </div>
-
+                        @if (_stats.Games.TryGetValue("math", out var mathStats)){
                             <div class="panelRow2">
-                                <p>Avg Score<br /><span class="panelNum">6</span></p>
-                                <p>Best Score<br /><span class="panelNum">13</span></p>
+                                <div class="panelHalf1">
+                                    <p class="numDesc" id="mathAvg">Avg Score</p>
+                                    @if (mathStats.GamesPlayed != 0){
+                                        <p class="panelNum" id="mathNum">@(mathStats.TotalScore / mathStats.GamesPlayed)</p>
+                                    }
+                                    else{
+                                        <p class="panelNum" id="mathNum">—</p>
+                                    }
+                                </div>
+                                <div class="panelHalf2">
+                                    <p class="numDesc" id="mathAvg">Avg Accuracy</p>
+                                    <p class="panelNum" id="mathNum">—%</p>
+                                </div>
+                            </div>
+
+                            <div class="panelRow3">
+                                <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
+
+                                @if (mathStats.History.Count > 0){
+                                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">@entry.Date</p>
+                                            <p id="margin0">@entry.Score</p>
+                                            @{rowCount += 1;}
+                                        </div>
+                                    }
+                                    @for (int i = 0; i < 3 - rowCount; i++){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">—</p>
+                                            <p id="margin0">—</p>
+                                        </div>
+                                    }
+                                }
+                                else{
+                                    @for (int i = 0; i < 3; i++){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">—</p>
+                                            <p id="margin0">—</p>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="memoryPanel">                    
+                        <div class="panelRow1">
+                            <h3>Memory</h3>
+                        </div>
+                        @if (_stats.Games.TryGetValue("memory", out var memoryStats)){
+                            <div class="panelRow2">
+                                <div class="panelHalf1">
+                                    <p class="numDesc" id="memoryAvg">Avg Score</p>
+                                    @if (memoryStats.GamesPlayed != 0){
+                                        <p class="panelNum" id="memoryNum">@(memoryStats.TotalScore / memoryStats.GamesPlayed)</p>
+                                    }
+                                    else{
+                                        <p class="panelNum" id="memoryNum">—</p>
+                                    }
+                                    <p>Best Score<br /><span class="panelNum">@memoryStats.BestScore</span></p>
+                                </div>
+                                <div class="panelHalf2">
+                                    <p class="numDesc" id="mathAvg">Avg Accuracy</p>
+                                    <p class="panelNum" id="mathNum">—%</p>
+                                </div>
                             </div>
 
                             <div class="panelRow3">
                                 <p class="recentScoresTitle">Recent scores</p>
-                                @for (int i = 0; i<3; i++){
-                                    <div class="recentScoreRow">
-                                        <p id="margin0">05/11/2026</p>
-                                        <p id="margin0">42</p>
-                                    </div>
+
+                                @if (memoryStats.History.Count > 0){
+                                    @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(3)){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">@entry.Date</p>
+                                            <p id="margin0">@entry.Score</p>
+                                            @{rowCount += 1;}
+                                        </div>
+                                    }
+                                    @for (int i = 0; i < 3 - rowCount; i++){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">—</p>
+                                            <p id="margin0">—</p>
+                                        </div>
+                                    }
+                                }
+                                else{
+                                    @for (int i = 0; i < 3; i++){
+                                        <div class="recentScoreRow">
+                                            <p id="margin0">—</p>
+                                            <p id="margin0">—</p>
+                                        </div>
+                                    }
                                 }
                             </div>
+                        }
+                    </div>
+
+                    <div class="stroopPanel">                    
+                        <div class="panelRow1">
+                            <h3>Stroop Test</h3>
+                        </div>
+
+                        <div class="panelRow2">
+                            <p>Avg Score<br /><span class="panelNum">6</span></p>
+                            <p>Best Score<br /><span class="panelNum">13</span></p>
+                        </div>
+
+                        <div class="panelRow3">
+                            <p class="recentScoresTitle">Recent scores</p>
+                            @for (int i = 0; i < 3; i++){
+                                <div class="recentScoreRow">
+                                    <p id="margin0">05/11/2026</p>
+                                    <p id="margin0">42</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
     }
 }
@@ -180,24 +194,43 @@
     private bool _loading = true;
     private bool _statsLoading = true;
     private TYB_AMI.Services.UserStats? _stats;
+    private HashSet<string> _fullyCompletedDates = new();
+    private int _calendarKey = 0;
 
     protected override async Task OnInitializedAsync(){
-        // MainLayout already calls AuthService.InitializeAsync() once,
-        // app-wide, before any page renders its own content. By the
-        // time THIS component runs, that may or may not have finished
-        // yet — Blazor doesn't strictly guarantee a parent layout's
-        // OnInitializedAsync fully completes before a child page's
-        // runs. So we poll briefly rather than assume it's ready.
+        AuthService.OnStatsChanged += OnStatsUpdated;
         for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++){
             await Task.Delay(100);
         }
-
         _loading = false;
-
         if (AuthService.IsAuthenticated){
             _stats = await AuthService.GetStatsAsync();
+            BuildCompletedDates();
         }
-
         _statsLoading = false;
+    }
+
+    private void BuildCompletedDates(){
+        if (_stats == null) return;
+        _fullyCompletedDates = new HashSet<string>(_stats.CompletedDates);
+    }
+
+    private void OnDateRender(DateRenderEventArgs args){
+        var dateStr = args.Date.ToString("yyyy-MM-dd");
+
+        if (_fullyCompletedDates.Contains(dateStr))
+            args.Attributes["class"] = "calendar-day-completed";
+
+        args.Disabled = true;
+    }
+    private async void OnStatsUpdated(){
+        _stats = await AuthService.GetStatsAsync();
+        BuildCompletedDates();
+        _calendarKey++;    
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose(){
+        AuthService.OnStatsChanged -= OnStatsUpdated;
     }
 }

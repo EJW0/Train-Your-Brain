@@ -4,12 +4,7 @@
 @inject TYB_AMI.Services.TYBAuthService AuthService
 
 <PageTitle>Stroop Test</PageTitle>
-
-@if (gameState == GameState.Loading){
-    <h3>Loading...</h3>
-}
-else if (gameState == GameState.Rules){
-    <Modal @ref="rules"
+<Modal @ref="rules"
            Title="Rules"
            UseStaticBackdrop="true"
            CloseOnEscape="false"
@@ -23,10 +18,21 @@ else if (gameState == GameState.Rules){
 
         <FooterTemplate>
             <Button Color="ButtonColor.Primary" @onclick="CloseRules">
-                Start Test
+                @if (showingInitialRules){
+                    <p style="margin:0">Start Test</p>
+                }
+                else{
+                    <p style="margin:0">Close</p>
+                }
             </Button>
         </FooterTemplate>
     </Modal>
+<button class="rulesButton" @onclick="ShowRules">?</button>
+@if (gameState == GameState.Loading){
+    <h3>Loading...</h3>
+}
+else if (gameState == GameState.Rules){
+    <p></p>
 }
 else if (gameState == GameState.Playing)
 {
@@ -89,6 +95,7 @@ else if (gameState == GameState.Results)
     private StroopColor? _flashColor = null;
     private GameState gameState = GameState.Loading;
     private TYB_AMI.Services.UserStats? _stats;
+    private bool showingInitialRules = true;
     private enum GameState { Loading, Rules, Playing, Results }
 
     protected override void OnInitialized(){
@@ -107,13 +114,18 @@ else if (gameState == GameState.Results)
     private async Task CloseRules(){
         await rules.HideAsync();
 
-        elapsedSeconds = 0;
-        cts = new CancellationTokenSource();
-        gameState = GameState.Playing;
+        if (showingInitialRules){
+            showingInitialRules = false;
 
-        _ = RunTimer();
-        await InvokeAsync(StateHasChanged);
-        await gameArea.FocusAsync();
+            elapsedSeconds = 0;
+            cts = new CancellationTokenSource();
+            gameState = GameState.Playing;
+
+            _ = RunTimer();
+
+            await InvokeAsync(StateHasChanged);
+            await gameArea.FocusAsync();
+        }
     }
 
     private async Task RunTimer(){
@@ -209,5 +221,10 @@ else if (gameState == GameState.Results)
                 await Submit(StroopColor.Yellow);
                 break;
         }
+    }
+
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
     }
 }

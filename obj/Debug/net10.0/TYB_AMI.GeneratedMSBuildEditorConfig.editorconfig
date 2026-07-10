@@ -40,6 +40,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/snsc/Blazor webapps/TYB_AMI/Pages/MathPractice.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTWF0aFByYWN0aWNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/snsc/Blazor webapps/TYB_AMI/Pages/MathProblems.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTWF0aFByb2JsZW1zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -60,8 +64,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU3Ryb29wLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/snsc/Blazor webapps/TYB_AMI/Pages/StroopPractice.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU3Ryb29wUHJhY3RpY2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/snsc/Blazor webapps/TYB_AMI/Pages/WordMemorizationGame.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV29yZE1lbW9yaXphdGlvbkdhbWUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/snsc/Blazor webapps/TYB_AMI/Pages/WordMemorizationPractice.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV29yZE1lbW9yaXphdGlvblByYWN0aWNlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/snsc/Blazor webapps/TYB_AMI/_Imports.razor]

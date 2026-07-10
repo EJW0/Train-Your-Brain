@@ -101,22 +101,7 @@
             _todayComplete = false;
             return;
         }
-        var progress = _stats.DailyProgress;
-        var required = TYB_AMI.Services.TYBAuthService
-                        .RequiredGamesForCycleDay(_stats.CycleDay);
-
-        // All three conditions must be true:
-        // 1. daily_progress.date matches TODAY on the server (not just
-        //    any date — this is what was missing before, causing the
-        //    "stuck on complete" bug when returning the next day)
-        // 2. last_completed_date also matches today (meaning the cycle
-        //    actually completed today, not on a previous day)
-        // 3. All required games for the current cycle day are present
-        //    in completed_games
-        _todayComplete =
-            progress.Date == _serverDate &&
-            _stats.Streak.LastCompletedDate == _serverDate &&
-            required.All(g => progress.CompletedGames.Contains(g));
+        _todayComplete = _stats.CompletedDates.Contains(_serverDate);
     }
 
 

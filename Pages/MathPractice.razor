@@ -1,0 +1,258 @@
+@page "/mathPractice"
+
+<PageTitle> Math Problems </PageTitle>
+
+<Modal @ref="rules"
+       Title="Rules"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false"
+       IsVerticallyCentered="true">
+
+    <BodyTemplate>
+        @if (showingInitialRules){
+            <p>Solve all 50 math problems as quickly and accurately as possible.</p>
+            <p>Your score will be shown at the end.</p>
+            <p>Click <strong>Begin</strong> to start the timer.</p>
+            <p><strong>(This is a practice round. Scores won't count towards your stats or daily streak.)</strong></p>
+        }
+        else{
+            <p>Solve all 50 math problems as quickly and accurately as possible.</p>
+            <p>Your score will be shown at the end.</p>
+            <p><strong>(This is a practice round. Scores won't count towards your stats or daily streak.)</strong></p>
+        }
+</BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary"
+                @onclick="CloseRules">
+            @if (showingInitialRules){
+                <p style="margin:0">Begin</p>
+            }
+            else{
+                <p style="margin:0">Close</p>
+            }
+        </Button>
+    </FooterTemplate>
+
+</Modal>
+
+<div class="progressBar">
+<Progress Class="mb-3">
+        <ProgressBar @ref="progressBar" />
+        @for (int i=0; i < 50; i++){
+            if (problems[i].isCorrect == true){
+                <ProgressBar Style="background-color: #80f74d;" Width="2" />
+            }
+            if (problems[i].isCorrect == false){
+                <ProgressBar Style="background-color: #FF0358;" Width="2" />
+            }
+        }
+    </Progress>
+</div>
+
+<button class="rulesButton" @onclick="ShowRules">?</button>
+
+@if (!quizFinished){
+    <div class="upperInfo">
+        <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
+        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+    </div>
+    <div class="problem-box">
+        <EditForm Model="problems" OnSubmit="NextProblem">
+            @if (isEmpty == true){
+                <p class="animate__animated animate__slideInDown errorMessage">@error</p>
+            }
+            <div class="problem">
+                <div class="inputAndQuestion">
+                    <h1>@problems[currentProblemIndex].Problem</h1>
+                        <NumberInput TValue="int?"
+                                    class="answer-input"
+                                    @bind-Value="userAnswer"/>
+                    @if (showCorrectImage){
+                        <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
+                    }
+                    else if (showCorrectImage == false & currentProblemIndex > 0){
+                        <img src="incorrect_x.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
+                    }
+                </div>              
+            </div>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" class="nextButton">Next</Button>
+        </EditForm>
+    </div>
+}
+else {
+    <p></p>
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Results" Active="true">
+            <Content>
+                <div class="resultsContainer">
+                    <h1>Results</h1>
+                    <p></p>
+                    <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+                    <h2>Score: @correctAnswers / @problems.Count</h2>
+                </div>
+            </Content>
+        </Tab>
+        <Tab Title="Responses">
+            <Content>
+                <div class="resultsContainer">
+                    <h3>Answer History</h3>
+                    <div class="responsesContainer" style="margin-top:1em">
+                        @foreach (var item in history){
+                            if (item.IsCorrect == true){
+                                <div class="responses mathResponses">
+                                    <div class="indicator" style="background: #80F74D;"></div>
+                                    <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
+                                </div>
+                            }
+                            else{
+                                <div class="responses mathResponses">
+                                    <div class="indicator" style="background: #FF0258"></div>
+                                    <p style="margin: auto; width: 95%; padding: 1em;">@item.Problem @item.UserAnswer</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+    
+}
+
+@code {
+    List<MathProblem> problems = new();
+    private Modal rules = default!;
+    int currentProblemIndex = 0;
+    int? userAnswer = null;
+    int correctAnswers = 0;
+    bool quizFinished = false;
+    bool showCorrectImage;
+    int animationCounter;
+    string? error; 
+    bool? isEmpty;
+    private bool _modalShown;
+    private List<AnswerLog> history = new();
+    private CancellationTokenSource cts = new();
+    private bool timerRunning = false;
+    private int elapsedSeconds = 0;
+    private ProgressBar progressBar = default!;
+    private int? lastResponse;
+    private bool showingInitialRules = true;
+
+
+    public class AnswerLog{
+        public string Problem { get; set; } = "";
+        public int? UserAnswer { get; set; }
+        public int CorrectAnswer { get; set; }
+        public bool IsCorrect { get; set; }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (firstRender && !_modalShown){
+            _modalShown = true;
+
+            await Task.Yield(); 
+            await rules.ShowAsync();
+        }
+    }
+
+    private async Task CloseRules(){
+        await rules.HideAsync();
+
+        if (showingInitialRules)
+        {
+            showingInitialRules = false;
+            timerRunning = true;
+            cts = new CancellationTokenSource();
+            _ = RunTimer();
+        }
+    }
+
+    protected override void OnInitialized(){
+        for (int i = 0; i < 50; i++){
+            problems.Add(new MathProblem());
+        }
+    }
+
+    private async Task NextProblem(){
+        errorMessage();
+        lastResponse = userAnswer;
+        if (userAnswer != null){
+
+            var currentProblem = problems[currentProblemIndex];
+            bool isCorrect = userAnswer == currentProblem.Solution;
+
+            if (isCorrect){
+                correctAnswers++;
+                animationCounter++;
+                showCorrectImage = true;
+                currentProblem.isCorrect = true;
+            }
+            else{
+                showCorrectImage = false;
+                animationCounter--;
+                currentProblem.isCorrect = false;
+            }
+
+            history.Add(new AnswerLog{
+                Problem = currentProblem.Problem,
+                UserAnswer = userAnswer,
+                CorrectAnswer = currentProblem.Solution,
+                IsCorrect = isCorrect
+            });
+
+            currentProblemIndex++;
+            
+            if (currentProblemIndex >= problems.Count){
+                quizFinished = true;
+            }
+        }
+        if (currentProblemIndex >= problems.Count){
+            quizFinished = true;
+            cts?.Cancel();
+        }
+        userAnswer = null;
+        
+    }
+
+    private void errorMessage(){
+        if (userAnswer == null){
+            isEmpty = true;
+            error = "Please enter a number";
+        }
+        else{
+            isEmpty = false;
+            error = "";
+        }
+    }
+
+    private async Task StartQuiz(){
+        if (timerRunning)
+            return;
+
+        timerRunning = true;
+        cts = new CancellationTokenSource();
+        _ = RunTimer();
+    }
+
+    private async Task RunTimer() {
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (await timer.WaitForNextTickAsync(cts!.Token)){
+                elapsedSeconds++;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException){
+            // Timer stopped
+        }
+        timer.Dispose();
+    }
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
+    }
+
+
+}

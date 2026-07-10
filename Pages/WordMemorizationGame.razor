@@ -4,28 +4,41 @@
 @using BlazorBootstrap
 
 <PageTitle>Word Memorization Test</PageTitle>
-
-@if (gameState == GameState.Rules){
-    <Modal @ref="rules"
+<button class="rulesButton" @onclick="ShowRules">?</button>
+<Modal @ref="rules"
        Title="Rules"
        UseStaticBackdrop="true"
        CloseOnEscape="false"
        IsVerticallyCentered="true">
 
     <BodyTemplate>
-        <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
-        <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
-        <p>Click Next to start the time.</p>
+        @if (showingInitialRules){
+            <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
+            <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
+            <p>Click Next to start the time.</p>
+        }
+        else{
+            <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
+            <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
+        }
 
     </BodyTemplate>
 
     <FooterTemplate>
-        <Button Color="ButtonColor.Primary"
-                @onclick="CloseRules">
-            Start Quiz
+        <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+            @if (showingInitialRules){
+                <p style="margin:0">Start Quiz</p>
+            }
+            else{
+                <p style="margin:0">Close</p>
+            }
+
         </Button>
     </FooterTemplate>
     </Modal>
+
+@if (gameState == GameState.Rules){
+    <p></p>
 }
 else if (gameState == GameState.Memorize){
 
@@ -122,6 +135,7 @@ else if (gameState == GameState.Results){
     private GameState gameState = GameState.Rules;
     private bool _modalShown;
     private TYB_AMI.Services.UserStats? _stats;
+    private bool showingInitialRules = true;
     private enum GameState
     {
         Rules,
@@ -229,11 +243,21 @@ else if (gameState == GameState.Results){
 
         }
     }
-    
+
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
+    }
+
     private async Task CloseRules(){
         await rules.HideAsync();
-        cts = new CancellationTokenSource();
-        _ = MemorizeTimer();
-        gameState = GameState.Memorize;
+        if (showingInitialRules){
+            showingInitialRules = false;
+
+            cts = new CancellationTokenSource();
+            gameState = GameState.Memorize;
+            _ = MemorizeTimer();
+        }
     }
+    
 }

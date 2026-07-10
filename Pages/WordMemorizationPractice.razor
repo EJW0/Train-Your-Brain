@@ -1,0 +1,258 @@
+@page "/wordmemoryPractice"
+@inject HttpClient Http
+@using BlazorBootstrap
+
+<PageTitle>Word Memorization Test</PageTitle>
+<button class="rulesButton" @onclick="ShowRules">?</button>
+<Modal @ref="rules"
+       Title="Rules"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false"
+       IsVerticallyCentered="true">
+
+    <BodyTemplate>
+        @if (showingInitialRules){
+            <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
+            <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
+            <p>Click Next to start the time.</p>
+            <p><strong>(This is a practice round. Scores won't count towards your stats or daily streak.)</strong></p>
+        }
+        else{
+            <p>30 words will be shown. Memorize as many as you can in 2 minutes.</p>
+            <p>Then for the next 2 minutes, type out as many words that you can remember.</p>
+            <p><strong>(This is a practice round. Scores won't count towards your stats or daily streak.)</strong></p>
+        }
+
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+            @if (showingInitialRules){
+                <p style="margin:0">Start Quiz</p>
+            }
+            else{
+                <p style="margin:0">Close</p>
+            }
+
+        </Button>
+    </FooterTemplate>
+    </Modal>
+
+@if (gameState == GameState.Rules){
+    <p></p>
+}
+else if (gameState == GameState.Memorize){
+
+    <h3>Memorize These Words</h3>
+    <div class="memorizeHeader">
+        <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
+        <Button Color="ButtonColor.Secondary" @onclick="SkipMemorize">Skip</Button>
+    </div>
+    <ul>
+        <div class="wordContainer">
+            @foreach (string word in game.SelectedWords){
+                <div class="containerItem ">
+                    @word
+                </div>
+            }
+        </div>
+    </ul>
+}
+else if (gameState == GameState.Recall){
+    <h3>Type All The Words You Remember</h3>
+    <p>Time Remaining: @TimeSpan.FromSeconds(recallSeconds).ToString(@"mm\:ss")</p>
+
+    <EditForm Model=game OnSubmit="SubmitWord">
+        <TextInput @bind-Value="@currentInput" TextAlignment="Alignment.Center" class="wordInput"/>
+        <div class="buttonGroup">
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+            <Button @onclick="FinishRecall" Color="ButtonColor.Danger">Done</Button>
+        </div>
+    </EditForm>
+
+    <div class="responsesContainer memoryResponsesContainer" >
+        @foreach (var word in game.UserWords){
+            <p class="responses" style="padding: 1em;">@word</p>
+        }
+    </div>
+}
+else if (gameState== GameState.TimeOver){
+    <div class="resultsContainer animate__animated animate__zoomIn" style="gap: 3em; height: 60vh; justify-content: center; --animate-duration: 0.5s;">
+        <h1>Time's up!</h1>
+        <Button @onclick="FinishRecall" Color="ButtonColor.Primary">Show Results</Button>
+    </div>
+}
+else if (gameState == GameState.Results){
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Results" Active="true">
+            <Content>
+                <div class="resultsContainer">
+                    <h3>Final Score: @game.Score / 30</h3>
+                    <div class="wordContainer">
+                        @foreach (string word in game.SelectedWords){
+                            <div class="containerItem">
+                                @if (game.ScoredWords.Contains(word)){
+                                    <div class="correctResponse">
+                                        @word
+                                    </div>
+                                }
+                                else{
+                                    <div class="forgottenWord">
+                                        @word
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+            </div>
+            </Content>
+        </Tab>
+        <Tab Title="Responses">
+            <Content>
+                <div class="resultsContainer">
+                    <h3>Word Memorization Responses</h3>
+                    <div class="responsesContainer memoryResponses">
+                        @foreach (var word in game.UserWords){
+                            <p class="responses" style="padding: 1em;">@word</p>
+                        }
+                    </div>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+    
+}
+
+@code {
+    private Modal rules = default!;
+    private WordMemorization game = new ();
+    private string currentInput = "";
+    private int memorizeSeconds = 120;
+    private int recallSeconds = 120;
+    private CancellationTokenSource cts = new();
+    private GameState gameState = GameState.Rules;
+    private bool _modalShown;
+    private bool showingInitialRules = true;
+    private enum GameState
+    {
+        Rules,
+        Memorize,
+        Recall,
+        TimeOver,
+        Results
+    }
+
+    protected override async Task OnInitializedAsync(){
+        var text = await Http.GetStringAsync("wordBank.txt");
+        game.LoadWords(text.Split('\n'));
+        game.SelectRandomWords(30);
+        gameState = GameState.Rules;
+    }
+
+    private async Task MemorizeTimer(){
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (memorizeSeconds > 0){
+                await timer.WaitForNextTickAsync(cts.Token);
+                memorizeSeconds--;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            gameState = GameState.Recall;
+            await InvokeAsync(StateHasChanged);
+            _ = RecallTimer();
+        }
+        catch (OperationCanceledException){
+        }
+        timer.Dispose();
+    }
+
+    private async Task SkipMemorize(){
+        if (!cts.IsCancellationRequested){
+            cts.Cancel();
+        }
+
+        gameState = GameState.Recall;
+        cts = new CancellationTokenSource();
+        await InvokeAsync(StateHasChanged);
+        _ = RecallTimer();
+    }
+
+    private async Task RecallTimer(){
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (recallSeconds > 0){
+                await timer.WaitForNextTickAsync(cts.Token);
+                recallSeconds--;
+                await InvokeAsync(StateHasChanged);
+            }
+            await FinishTimer();
+        }
+        catch (OperationCanceledException){
+        }
+        timer.Dispose();
+    }
+
+    private async Task SubmitWord(){
+        string word = currentInput.Trim().ToLower();
+        if (string.IsNullOrWhiteSpace(word))
+            return;
+
+        game.AddAnswer(word);
+        currentInput = "";
+
+    }
+
+    private async Task FinishTimer(){
+        gameState = GameState.TimeOver;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task FinishRecall(){
+        game.CalculateScore();
+        gameState = GameState.Results;
+        await InvokeAsync(StateHasChanged);
+
+        if (!cts.IsCancellationRequested){
+            cts.Cancel();
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose(){
+        cts.Cancel();
+        cts.Dispose();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        Console.WriteLine($"OnAfterRenderAsync: firstRender={firstRender}");
+
+        if (firstRender && !_modalShown){
+            Console.WriteLine("Attempting to show modal");
+
+            _modalShown = true;
+
+            await Task.Yield(); 
+            await rules.ShowAsync();
+            Console.WriteLine("ShowAsync completed");
+
+        }
+    }
+
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
+    }
+
+    private async Task CloseRules(){
+        await rules.HideAsync();
+        if (showingInitialRules){
+            showingInitialRules = false;
+
+            cts = new CancellationTokenSource();
+            gameState = GameState.Memorize;
+            _ = MemorizeTimer();
+        }
+    }
+    
+}

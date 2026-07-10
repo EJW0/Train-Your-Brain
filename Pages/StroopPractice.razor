@@ -1,0 +1,226 @@
+@page "/stroopPractice"
+@using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Web
+
+<PageTitle>Stroop Test</PageTitle>
+<Modal @ref="rules"
+           Title="Rules"
+           UseStaticBackdrop="true"
+           CloseOnEscape="false"
+           IsVerticallyCentered="true">
+
+        <BodyTemplate>
+            <p>Select the <strong>color</strong> of the word, not what the word says.</p>
+            <p>Get through all 50 words as quickly and accurately as possible.</p>
+            <p>You may use either the buttons or the arrow keys.</p>
+            <p><strong>(This is a practice round. Scores won't count towards your stats nor daily streak.)</strong></p>
+        </BodyTemplate>
+
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+                @if (showingInitialRules){
+                    <p style="margin:0">Start Test</p>
+                }
+                else{
+                    <p style="margin:0">Close</p>
+                }
+            </Button>
+        </FooterTemplate>
+    </Modal>
+<button class="rulesButton" @onclick="ShowRules">?</button>
+@if (gameState == GameState.Loading){
+    <h3>Loading...</h3>
+}
+else if (gameState == GameState.Rules){
+    <p></p>
+}
+else if (gameState == GameState.Playing)
+{
+    <div class="stroopGame"
+     tabindex="0"
+     @ref="gameArea"
+     @onkeydown="HandleKeyDown">
+        <div class="upperInfo">
+            <p>Progress @(game.CurrentQuestion) / 50</p>
+            <p>Score: @game.Score</p>
+            <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+        </div>
+
+        <h1 class="stroopWord" style="color:@GetCssColor(game.CurrentWord.Color)">
+            @game.CurrentWord.Text
+        </h1>
+
+        <div class="stroopButtonGroup">
+            <div class="stroopButtonGroup1">
+                <button class="stroopButton stroopRed @GetFlashClass(StroopColor.Red)"
+                        @onclick="() => Submit(StroopColor.Red)">
+                    <span id="rotateText">Red</span>
+                </button>
+                <button class="stroopButton stroopBlue @GetFlashClass(StroopColor.Blue)"
+                        @onclick="() => Submit(StroopColor.Blue)">
+                    <span id="rotateText">Blue</span>
+                </button>
+            </div>
+            <div class="stroopButtonGroup2">
+                <button class="stroopButton stroopGreen @GetFlashClass(StroopColor.Green)"
+                        @onclick="() => Submit(StroopColor.Green)">
+                    <span id="rotateText">Green</span>
+                </button>
+                <button class="stroopButton stroopYellow @GetFlashClass(StroopColor.Yellow)"
+                        @onclick="() => Submit(StroopColor.Yellow)">
+                    <span id="rotateText">Yellow</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+else if (gameState == GameState.Results)
+{
+    <div class="resultsContainer">
+        <h2>Finished!</h2>
+        <h3>Score: @game.Score / 50</h3>
+        <h3>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h3>
+    </div>
+}
+
+@code {
+
+    private StroopGame game = new();
+    private ElementReference gameArea;
+    private Modal rules = default!;
+    private bool modalShown;
+    private int elapsedSeconds;
+    private bool _resetting = false;
+    private CancellationTokenSource cts = new();
+    private StroopColor? _flashColor = null;
+    private GameState gameState = GameState.Loading;
+    private bool showingInitialRules = true;
+    private enum GameState { Loading, Rules, Playing, Results }
+
+    protected override void OnInitialized(){
+        game.Reset();
+        gameState = GameState.Rules;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (firstRender && !modalShown){
+            modalShown = true;
+            await Task.Yield();
+            await rules.ShowAsync();
+        }
+    }
+
+    private async Task CloseRules(){
+        await rules.HideAsync();
+
+        if (showingInitialRules){
+            showingInitialRules = false;
+
+            elapsedSeconds = 0;
+            cts = new CancellationTokenSource();
+            gameState = GameState.Playing;
+
+            _ = RunTimer();
+
+            await InvokeAsync(StateHasChanged);
+            await gameArea.FocusAsync();
+        }
+    }
+
+    private async Task RunTimer(){
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try{
+            while (await timer.WaitForNextTickAsync(cts.Token)){
+                elapsedSeconds++;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException){}
+        timer.Dispose();
+    }
+
+    private async Task Submit(StroopColor color){
+        Console.WriteLine($"Submit: {color}, Question = {game.CurrentQuestion}");
+        bool isCorrect = color == game.CurrentWord.Color;
+        game.SubmitAnswer(color);
+
+        if (game.Finished){
+            cts.Cancel();
+            _flashColor = null;
+            gameState = GameState.Results; 
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (isCorrect){
+            if (_flashColor == color){
+                _flashColor = null;
+                _resetting = true;
+
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(16);
+
+                _resetting = false;
+            }
+
+            _flashColor = color;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(600);
+            _flashColor = null;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string GetCssColor(StroopColor color){
+        return color switch{
+            StroopColor.Red    => "red",
+            StroopColor.Blue   => "blue",
+            StroopColor.Green  => "green",
+            StroopColor.Yellow => "gold",
+            _ => "black"
+        };
+    }
+
+    public void Dispose(){
+        cts.Cancel();
+        cts.Dispose();
+    }
+    private string GetFlashClass(StroopColor color){
+        if (_flashColor == color)
+            return _resetting ? "flash-reset" : $"flash-{GetColorName(color)}";
+        return "";
+    }
+
+    private string GetColorName(StroopColor color) => color switch{
+        StroopColor.Red    => "red",
+        StroopColor.Blue   => "blue",
+        StroopColor.Green  => "green",
+        StroopColor.Yellow => "yellow",
+        _ => ""
+    };
+    private async Task HandleKeyDown(KeyboardEventArgs e){
+        if (e.Repeat)
+            return;
+        if (gameState != GameState.Playing)
+            return;
+        switch (e.Key){
+            case "ArrowUp":
+                await Submit(StroopColor.Red);
+                break;
+            case "ArrowLeft":
+                await Submit(StroopColor.Green);
+                break;
+            case "ArrowRight":
+                await Submit(StroopColor.Blue);
+                break;
+            case "ArrowDown":
+                await Submit(StroopColor.Yellow);
+                break;
+        }
+    }
+
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
+    }
+}

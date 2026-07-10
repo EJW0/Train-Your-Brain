@@ -357,10 +357,32 @@ code {
 }
 
 .calendar {
+    display: flex;
     width: 40%;
     height: 100%;
     background-color: rgb(207, 167, 160);
+    justify-content: center;
+    padding: 10px;
 }
+    .rz-datepicker-inline {
+        width: 100% !important;
+        border-radius: 20px !important;
+        overflow: hidden;
+    }
+
+    .rz-datepicker-calendar {
+        width: 100% !important;
+    }
+
+    .rz-datepicker-calendar table {
+        width: 100% !important;
+    }
+    .calendar-day-completed {
+        background-color: #17bb1f !important;
+        color: white !important;
+        font-weight: 600;
+        border: 1px solid white;
+    }    
 
 #bottomHalf {
     width: 100%;
@@ -536,3 +558,24 @@ code {
 .flash-blue   { animation: flood-blue   0.4s ease forwards; }
 .flash-green  { animation: flood-green  0.4s ease forwards; }
 .flash-yellow { animation: flood-yellow 0.4s ease forwards; }
+
+.rulesButton {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background-color: #1e88e5;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.rulesButton:hover {
+    background-color: #1565c0;
+}

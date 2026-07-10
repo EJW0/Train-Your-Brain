@@ -10,16 +10,26 @@
        IsVerticallyCentered="true">
 
     <BodyTemplate>
-        <p>Solve all 50 math problems as quickly and accurately as possible.</p>
-        <p>Your score will be shown at the end.</p>
-        <p>Click Begin to start the time.</p>
-
+        @if (showingInitialRules){
+            <p>Solve all 50 math problems as quickly and accurately as possible.</p>
+            <p>Your score will be shown at the end.</p>
+            <p>Click <strong>Begin</strong> to start the timer.</p>
+        }
+        else{
+            <p>Solve all 50 math problems as quickly and accurately as possible.</p>
+            <p>Your score will be shown at the end.</p>
+        }
     </BodyTemplate>
 
     <FooterTemplate>
         <Button Color="ButtonColor.Primary"
                 @onclick="CloseRules">
-            Begin
+            @if (showingInitialRules){
+                <p style="margin:0">Begin</p>
+            }
+            else{
+                <p style="margin:0">Close</p>
+            }
         </Button>
     </FooterTemplate>
 
@@ -38,6 +48,8 @@
         }
     </Progress>
 </div>
+
+<button class="rulesButton" @onclick="ShowRules">?</button>
 
 @if (!quizFinished){
     <div class="upperInfo">
@@ -129,6 +141,7 @@ else {
     private ProgressBar progressBar = default!;
     private int? lastResponse;
     private TYB_AMI.Services.UserStats? _stats;
+    private bool showingInitialRules = true;
 
 
     public class AnswerLog{
@@ -147,11 +160,20 @@ else {
         }
     }
 
-    async Task CloseRules(){
+    private async Task CloseRules(){
         await rules.HideAsync();
-        timerRunning = true;
-        cts = new CancellationTokenSource();
-        _ = RunTimer();
+
+        if (showingInitialRules)
+        {
+            showingInitialRules = false;
+            timerRunning = true;
+            cts = new CancellationTokenSource();
+            _ = RunTimer();
+        }
+        @* else{
+            cts = new CancellationTokenSource();
+            _ = RunTimer();
+        } *@
     }
 
     protected override void OnInitialized(){
@@ -236,7 +258,10 @@ else {
         }
         timer.Dispose();
     }
-
+    private async Task ShowRules(){
+        showingInitialRules = false;
+        await rules.ShowAsync();
+    }
 
 
 }

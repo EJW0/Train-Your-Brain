@@ -1,1 +1,132 @@
 @page "/daily"
+@inject TYB_AMI.Services.TYBAuthService AuthService
+
+<PageTitle>Daily Training</PageTitle>
+
+@if (_loading){
+    <p>Loading...</p>
+}
+else if (!AuthService.IsAuthenticated){
+    <p>Please log in to view your daily training.</p>
+}
+else if (_stats == null){
+    <p>Couldn't load your training data. Please refresh.</p>
+}
+else{
+    <h2>Day @_stats.CycleDay — Today's Training</h2>
+
+    @if (_allDone){
+        <p>You've completed all of today's exercises. Come back tomorrow!</p>
+    }
+    else{
+        <p>Complete the following exercises to continue your streak:</p>
+    }
+
+    <ul class="daily-checklist">
+        @foreach (var game in _requiredGames){
+            bool done = _completedToday.Contains(game.Id);
+
+            <li class="daily-checklist-item @(done ? "done" : "pending")">
+                <span class="check-indicator">@(done ? "✓" : "○")</span>
+                @if (done){
+                    // Already done — show name but no link needed
+                    <span class="game-name">@game.DisplayName</span>
+                }
+                else{
+                    <NavLink href="@game.Route" class="game-link">
+                        @game.DisplayName
+                    </NavLink>
+                }
+            </li>
+        }
+    </ul>
+
+    <p class="streak-note">
+        Current streak: <strong>@_stats.Streak.Current</strong> day(s)
+    </p>
+}
+
+@code {
+    private TYB_AMI.Services.UserStats? _stats;
+    private bool _loading = true;
+    private List<GameEntry> _requiredGames = new();
+    private List<string> _completedToday = new();
+    private bool _allDone = false;
+    private string _serverDate = "";
+
+    // Maps game IDs to their display names and Blazor routes.
+    // Update the Route values to match your actual page routes.
+    private static readonly Dictionary<string, GameEntry> GameCatalog = new(){
+        ["memory"] = new GameEntry("memory", "Word Memory",  "/wordmemory"),
+        ["math"]   = new GameEntry("math",   "Math",         "/math"),
+        ["stroop"] = new GameEntry("stroop", "Stroop Test",  "/stroop"),
+    };
+
+    protected override async Task OnInitializedAsync(){
+        AuthService.OnStatsChanged += OnStatsUpdated;
+        for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++){
+            await Task.Delay(100);
+        }
+        if (AuthService.IsAuthenticated){
+            _stats = await AuthService.GetStatsAsync();
+            await FetchServerDate();
+            UpdateDerivedState();
+        }
+        _loading = false;
+    }
+
+    private async Task FetchServerDate(){
+        try{
+            var response = await new System.Net.Http.HttpClient()
+                .GetAsync("https://abundantminds.org/wp-json/tyb/v1/time");
+            if (response.IsSuccessStatusCode){
+                var data = await response.Content
+                    .ReadFromJsonAsync<TimeResponse>();
+                _serverDate = data?.ServerDate ?? "";
+            }
+        }
+        catch{
+            _serverDate = "";
+        }
+    }
+
+    private void UpdateDerivedState(){
+        if (_stats == null) return;
+
+        // Build the list of required games for today's cycle day
+        var requiredIds = TYB_AMI.Services.TYBAuthService
+                              .RequiredGamesForCycleDay(_stats.CycleDay);
+
+        _requiredGames = requiredIds
+            .Where(id => GameCatalog.ContainsKey(id))
+            .Select(id => GameCatalog[id])
+            .ToList();
+
+        // Work out which ones are already done today using the
+        // server date (not local date) to avoid timezone mismatch
+        var progress = _stats.DailyProgress;
+        _completedToday = (progress.Date == _serverDate)
+            ? progress.CompletedGames
+                .Where(g => requiredIds.Contains(g))
+                .ToList()
+            : new List<string>();
+
+        _allDone = requiredIds.All(id => _completedToday.Contains(id));
+    }
+
+    private async void OnStatsUpdated(){
+        _stats = await AuthService.GetStatsAsync();
+        UpdateDerivedState();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose(){
+        AuthService.OnStatsChanged -= OnStatsUpdated;
+    }
+
+    private record GameEntry(string Id, string DisplayName, string Route);
+    private class TimeResponse{
+        [System.Text.Json.Serialization.JsonPropertyName("server_date")]
+        public string ServerDate { get; set; } = "";
+    }
+}
