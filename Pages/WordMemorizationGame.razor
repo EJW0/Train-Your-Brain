@@ -219,7 +219,7 @@ else if (gameState == GameState.Results){
         if (!cts.IsCancellationRequested){
             cts.Cancel();
         }
-        _stats = await AuthService.SubmitScoreAsync("memory", game.Score);
+        _stats = await AuthService.SubmitScoreAsync("memory", game.Score, 0);
         AuthService.NotifyStatsChanged();
         await InvokeAsync(StateHasChanged);
     }

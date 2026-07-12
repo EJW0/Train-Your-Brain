@@ -55,7 +55,7 @@
 @if (!quizFinished){
     <div class="upperInfo">
         <p>Progress: @(currentProblemIndex + 1) / @problems.Count</p>
-        <p>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
+        <p>Time - @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</p>
     </div>
     <div class="problem-box">
         <EditForm Model="problems" OnSubmit="NextProblem">
@@ -81,7 +81,6 @@
     </div>
 }
 else {
-    <p></p>
     <Tabs EnableFadeEffect="true">
         <Tab Title="Results" Active="true">
             <Content>

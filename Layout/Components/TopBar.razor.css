@@ -1,11 +1,41 @@
 .topBar {
     display: flex;
+    flex-direction: row;
     height: 10%;
-    align-items:last baseline;
+    align-items:end;
     padding: 5px 2em;
+    justify-content: space-between;
 }
 
 .greeting {
     color: white;
     width: fit-content;
 }
+
+.credits {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    height: 3em;
+    width: 3em;
+    padding: 0;
+    border: none;
+    margin-bottom: 3px;
+}   
+    .creditsButton {
+        font-size: 2em;
+        margin: 0;
+        color: white;
+        transition: background-position .55s;
+        background-image: linear-gradient(-35deg, rgb(207, 167, 160) 0%,rgb(20, 83, 94) 90%);
+        border-radius: 50%;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        user-select: none;
+        background-size: 250% auto;
+    }
+        .creditsButton:hover {
+            background-position: right center;
+        }

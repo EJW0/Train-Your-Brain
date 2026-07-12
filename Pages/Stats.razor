@@ -1,0 +1,151 @@
+@page "/stats"
+@inject TYB_AMI.Services.TYBAuthService AuthService
+@implements IDisposable
+
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Stats</PageTitle>
+
+<h2>Your Stats</h2>
+
+@if (_loading){
+    <p>Loading...</p>
+}
+else if (_stats == null){
+    <p>Couldn't load your stats. Please refresh.</p>
+}
+else{
+    <h3>Math</h3>
+
+    <div class="chart-header">
+        <button @onclick="PreviousWeek" disabled="@(_week <= 1)">← Prev</button>
+        <span>Week @_week (Days @DayStart – @DayEnd)</span>
+        <button @onclick="NextWeek">Next →</button>
+    </div>
+
+    @if (!_chartData.Any())
+    {
+        <p class="no-data">No data for this week yet.</p>
+    }
+    else
+    {
+        <RadzenChart>
+
+            <RadzenLineSeries Data="@_chartData"
+                              CategoryProperty="CycleDay"
+                              ValueProperty="TimeSeconds"
+                              Title="Time (seconds)"
+                              Smooth="true">
+                <RadzenMarkers Visible="true"
+                               MarkerType="MarkerType.Circle" />
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenLineSeries>
+
+            <RadzenCategoryAxis>
+                <RadzenAxisTitle Text="Cycle Day" />
+            </RadzenCategoryAxis>
+
+            <RadzenValueAxis>
+                <RadzenAxisTitle Text="Time (seconds)" />
+            </RadzenValueAxis>
+
+            <RadzenLegend Visible="false" />
+
+            <RadzenChartTooltipOptions Shared="false" />
+
+        </RadzenChart>
+    }
+}
+
+@code {
+    private TYB_AMI.Services.UserStats? _stats;
+    private bool _loading = true;
+    private int _week = 1;
+    private List<ChartPoint> _chartData = new();
+
+    private int DayStart => (_week - 1) * 7 + 1;
+    private int DayEnd   => DayStart + 6;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthService.OnStatsChanged += OnStatsUpdated;
+
+        for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++)
+        {
+            await Task.Delay(100);
+        }
+
+        if (AuthService.IsAuthenticated)
+        {
+            _stats = await AuthService.GetStatsAsync();
+            SetInitialWeek();
+            BuildChartData();
+        }
+
+        _loading = false;
+    }
+
+    private void SetInitialWeek()
+    {
+        if (_stats == null) return;
+        _week = Math.Max(1, (int)Math.Ceiling(_stats.CycleDay / 7.0));
+    }
+
+    private void PreviousWeek()
+    {
+        if (_week > 1)
+        {
+            _week--;
+            BuildChartData();
+        }
+    }
+
+    private void NextWeek()
+    {
+        _week++;
+        BuildChartData();
+    }
+
+    private void BuildChartData()
+    {
+        _chartData.Clear();
+
+        if (_stats == null) return;
+        if (!_stats.Games.TryGetValue("math", out var mathStats)) return;
+
+        // Only include entries that fall within this week's cycle day
+        // range and have a recorded time. Entries with CycleDay == 0
+        // predate the field being stored and are excluded.
+        _chartData = mathStats.History
+            .Where(e => e.CycleDay >= DayStart
+                     && e.CycleDay <= DayEnd
+                     && e.CycleDay > 0
+                     && e.TimeSeconds > 0)
+            .OrderBy(e => e.CycleDay)
+            .Select(e => new ChartPoint
+            {
+                CycleDay    = e.CycleDay!.Value,
+                TimeSeconds = e.TimeSeconds,
+            })
+            .ToList();
+    }
+
+    private async void OnStatsUpdated()
+    {
+        _stats = await AuthService.GetStatsAsync();
+        BuildChartData();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnStatsChanged -= OnStatsUpdated;
+    }
+
+    private class ChartPoint
+    {
+        public int CycleDay    { get; set; }
+        public int TimeSeconds { get; set; }
+    }
+}

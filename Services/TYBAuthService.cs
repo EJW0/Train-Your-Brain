@@ -65,14 +65,12 @@ namespace TYB_AMI.Services
         /// one of the IDs the WordPress plugin expects exactly
         /// (e.g. "game1", "math", "game3").
         /// </summary>
-        public async Task<UserStats?> SubmitScoreAsync(string gameId, int score)
-        {
+        public async Task<UserStats?> SubmitScoreAsync(string gameId, int score, int timeSeconds){
             if (!IsAuthenticated) return null;
-
-            var response = await _http.PostAsJsonAsync($"{ApiBase}/stats", new
-            {
+            var response = await _http.PostAsJsonAsync($"{ApiBase}/stats", new{
                 game_id = gameId,
-                score = score
+                score = score,
+                time_seconds = timeSeconds
             });
 
             if (!response.IsSuccessStatusCode) return null;
@@ -142,6 +140,9 @@ namespace TYB_AMI.Services
         [JsonPropertyName("total_score")]
         public int TotalScore { get; set; }
 
+        [JsonPropertyName("best_time")]
+        public int BestTime { get; set; }
+
         [JsonPropertyName("history")]
         public List<GameHistoryEntry> History { get; set; } = new();
     }
@@ -153,5 +154,11 @@ namespace TYB_AMI.Services
 
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
+
+        [JsonPropertyName("time_seconds")]
+        public int TimeSeconds { get; set; }
+        
+        [JsonPropertyName("cycle_day")]
+        public int? CycleDay { get; set; }
     }
 }

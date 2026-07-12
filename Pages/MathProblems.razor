@@ -80,14 +80,13 @@
     </div>
 }
 else {
-    <p></p>
     <Tabs EnableFadeEffect="true">
         <Tab Title="Results" Active="true">
             <Content>
                 <div class="resultsContainer">
                     <h1>Results</h1>
                     <p></p>
-                    <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+                    <h2>Time - @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
                     <h2>Score: @correctAnswers / @problems.Count</h2>
                 </div>
                 @if (_stats != null){
@@ -218,7 +217,7 @@ else {
         if (currentProblemIndex >= problems.Count){
             quizFinished = true;
             cts?.Cancel();
-            _stats = await AuthService.SubmitScoreAsync("math", correctAnswers);
+            _stats = await AuthService.SubmitScoreAsync("math", correctAnswers, elapsedSeconds);
             AuthService.NotifyStatsChanged();
         }
         userAnswer = null;

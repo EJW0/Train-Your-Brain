@@ -74,13 +74,18 @@ else if (gameState == GameState.Playing)
         </div>
     </div>
 }
-else if (gameState == GameState.Results)
-{
-    <div class="resultsContainer">
-        <h2>Finished!</h2>
-        <h3>Score: @game.Score / 50</h3>
-        <h3>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h3>
-    </div>
+else if (gameState == GameState.Results){
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Results" Active="true">
+            <Content>
+                <div class="resultsContainer">
+                    <h1>Finished!</h1>                    
+                    <h2>Time - @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+                    <h2>Score: @game.Score / 50</h2>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
 }
 
 @code {

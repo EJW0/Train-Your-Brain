@@ -3,7 +3,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(114, 161, 159) 100%);
+    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(80, 128, 125) 100%);
     padding: 1.5rem 0rem;
     align-items: center;
     box-sizing: border-box;

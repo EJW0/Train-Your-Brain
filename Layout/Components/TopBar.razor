@@ -1,6 +1,22 @@
 @using TYB_AMI.Layout.Components
 @inject TYB_AMI.Services.TYBAuthService AuthService
 
+<Modal @ref="creditsModal"
+       Title="Credits"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
+
+    <BodyTemplate>
+        <p>2026 Abundant Minds Initiative</p>
+
+        <p>This application was made by Emma Wang (emma24wang@gmail.com) and Zoey Lapidus</p>
+
+        <p>GitHub Repo:</p>
+    </BodyTemplate>
+
+    </Modal>
+
 <div class="topBar">
     <div class="greeting">
         @if (_loading){
@@ -13,19 +29,26 @@
             <span>Hello, guest!</span>
         }
     </div>
+    <button class="credits" @onclick ="ShowRules">
+        <p class="creditsButton">©</p>
+    </button>
 
 </div>
 
 @code {
     private bool _loading = true;
+    private Modal creditsModal = default!;
+
 
     protected override async Task OnInitializedAsync(){
         for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++){
             await Task.Delay(100);
         }
-
         _loading = false;
         
+    }
+    private async Task ShowRules(){
+        await creditsModal.ShowAsync();
     }
 }
 

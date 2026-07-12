@@ -60,6 +60,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVxdWlyZWRHYW1lcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/snsc/Blazor webapps/TYB_AMI/Pages/Stats.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU3RhdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/snsc/Blazor webapps/TYB_AMI/Pages/Stroop.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU3Ryb29wLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 

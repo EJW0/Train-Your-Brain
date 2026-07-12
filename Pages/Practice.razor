@@ -1,19 +1,42 @@
 @page "/practice"
+<PageTitle>Practice</PageTitle>
 
-<button>
-    <a href="/mathPractice">
-        Math
-    </a>
-</button>
+<div class="practicePageContainer">
+    <h1>Practice</h1>
 
-<button>
-    <a href="/wordmemoryPractice">
-        Memory
-    </a>
-</button>
+    <div class=practiceContainer>
+        <div class="practicePanel">
+            <h1>Math</h1>
+            <p class="practiceDesc">Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.</p>
+            
+            <div class="practicePlayMath">
+                <div class="iconButton">
+                    <a href="/mathPractice" class="practiceMath bi bi-play"></a>
+                </div>
+            </div>
+        </div>
 
-<button>
-    <a href="/stroopPractice">
-        Stroop Test
-    </a>
-</button>
+        <div class="practicePanel">
+            <h1>Memory</h1>
+            <p class="practiceDesc">Spend 2 minutes memorizing 30 words, then recall as many words as you can.</p>
+            
+            <div class="practicePlayMemory">
+                <div class="iconButton">
+                    <a href="/wordmemoryPractice" class="practiceMemory bi bi-play"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="practicePanel">
+            <h1>Stroop Test</h1>
+            <p class="practiceDesc">Press the button with the same color as the word that is shown. Be as fast and accurate as possible.</p>
+            
+            <div class="practicePlayStroop">
+                <div class="iconButton">
+                    <a href="/stroopPractice" class="practiceStroop bi bi-play"></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

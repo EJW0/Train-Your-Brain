@@ -6,7 +6,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(114, 161, 159) 100%);
+    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(80, 128, 125) 100%);
     padding: 1.5rem 0rem;
     align-items: center;
     box-sizing: border-box;
@@ -132,20 +132,51 @@
 /* /Layout/Components/TopBar.razor.rz.scp.css */
 .topBar[b-35d4ztuca0] {
     display: flex;
+    flex-direction: row;
     height: 10%;
-    align-items:last baseline;
+    align-items:end;
     padding: 5px 2em;
+    justify-content: space-between;
 }
 
 .greeting[b-35d4ztuca0] {
     color: white;
     width: fit-content;
 }
+
+.credits[b-35d4ztuca0] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    height: 3em;
+    width: 3em;
+    padding: 0;
+    border: none;
+    margin-bottom: 3px;
+}   
+    .creditsButton[b-35d4ztuca0] {
+        font-size: 2em;
+        margin: 0;
+        color: white;
+        transition: background-position .55s;
+        background-image: linear-gradient(-35deg, rgb(207, 167, 160) 0%,rgb(20, 83, 94) 90%);
+        border-radius: 50%;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        user-select: none;
+        background-size: 250% auto;
+    }
+        .creditsButton:hover[b-35d4ztuca0] {
+            background-position: right center;
+        }
 /* /Layout/MainLayout.razor.rz.scp.css */
 .app[b-bceh9u9fql] {
     display: flex;
     flex-direction: row;
-    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(95, 162, 159) 100%);
+    background: linear-gradient(to bottom, rgb(13, 51, 59) 40%,rgb(80, 128, 125) 100%);
+
 }
 
 .pageContent[b-bceh9u9fql] {

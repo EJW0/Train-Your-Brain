@@ -7,7 +7,33 @@
     <p>Loading...</p>
 }
 else if (!AuthService.IsAuthenticated){
-    <p>Please log in to view your daily training.</p>
+    <div class="practicePageContainer">
+    <h1>Daily Exercise(s)</h1>
+
+    <div class=practiceContainer>
+        <div class="practicePanel">
+            <h1>Math</h1>
+            <p class="practiceDesc">Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.</p>
+            
+            <div class="practicePlayMath">
+                <div class="iconButton">
+                    <a href="/mathPractice" class="practiceMath bi bi-play"></a>
+                </div>
+            </div>           
+        </div>
+        <div class="practicePanel">
+            <h1>Math</h1>
+            <p class="practiceDesc">Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.</p>
+            
+            <div class="practicePlayMath">
+                <div class="iconButton">
+                    <a href="/mathPractice" class="practiceMath bi bi-play"></a>
+                </div>
+            </div>           
+        </div>
+    </div>
+</div>
+
 }
 else if (_stats == null){
     <p>Couldn't load your training data. Please refresh.</p>
@@ -54,8 +80,6 @@ else{
     private bool _allDone = false;
     private string _serverDate = "";
 
-    // Maps game IDs to their display names and Blazor routes.
-    // Update the Route values to match your actual page routes.
     private static readonly Dictionary<string, GameEntry> GameCatalog = new(){
         ["memory"] = new GameEntry("memory", "Word Memory",  "/wordmemory"),
         ["math"]   = new GameEntry("math",   "Math",         "/math"),
