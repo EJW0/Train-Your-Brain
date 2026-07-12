@@ -84,10 +84,10 @@ namespace TYB_AMI.Services
         }
 
         public static List<string> RequiredGamesForCycleDay(int cycleDay){
-        if (cycleDay == 1 || cycleDay == 8)
-            return new List<string> { "stroop", "memory" };
-        return new List<string> { "math" };
-    }
+            if ((cycleDay - 1) % 7 == 0)
+                return new List<string> { "stroop", "memory" };
+            return new List<string> { "math" };
+        }
     }
 
     public class UserStats
