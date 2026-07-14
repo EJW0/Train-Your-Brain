@@ -6,25 +6,32 @@
 @using BlazorBootstrap
 
 <div class="sideBar">
-    <div class="sidebar-logo">
+    <div class="sidebarLogo">
         @* <img src="logo.png" alt="Train Your Brain Logo" /> *@
         logo
     </div>
 
-    <nav class="sidebarNav">
-        <NavLink class="dailyButton">
-            <strong><p class="dayCounter">Day @(_stats?.CycleDay.ToString() ?? "—")<br /></p></strong>
-            @if (_todayComplete){
-                <p class="countdown">@_countdownDisplay</p>
+    <div class="dayWeekContainer">
+            @if (_stats != null){
+                <p class="weekLabel">Week @((int)Math.Ceiling(_stats.CycleDay / 7.0))</p>
             }
-            
-        </NavLink>
+            <div class="dailyButton">
+                <strong><p class="dayCounter">Day @(_stats?.CycleDay.ToString() ?? "—")</p></strong>
+                @if (_todayComplete){
+                    <p class="countdown">@_countdownDisplay</p>
+                }
+                
+            </div>
+        </div>
+
+    <nav class="sidebarNav">        
+        
         @if (!_todayComplete){
             <NavLink href="/daily" class="specialDayButton" draggable="false">
                 <div class="dayIconCircle">
                     <i class="bi bi-play-fill"></i>
                 </div>
-                <span>Begin Day @(_stats?.CycleDay.ToString() ?? "—")</span>
+                <span id="beginDay">Begin Day @(_stats?.CycleDay.ToString() ?? "—")</span>
             </NavLink>
         }
         <NavLink href="/" Match="NavLinkMatch.All" class="sidebarButton" draggable="false">

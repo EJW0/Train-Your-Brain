@@ -60,6 +60,16 @@ namespace TYB_AMI.Services
             return await response.Content.ReadFromJsonAsync<UserStats>();
         }
 
+        public async Task<TimeResponse?> GetServerTimeAsync()
+        {
+            if (!IsAuthenticated) return null;
+
+            var response = await _http.GetAsync($"{ApiBase}/time");
+            if (!response.IsSuccessStatusCode) return null;
+
+            return await response.Content.ReadFromJsonAsync<TimeResponse>();
+        }
+
         /// <summary>
         /// Call this once a single game finishes. gameId must match
         /// one of the IDs the WordPress plugin expects exactly
@@ -87,6 +97,18 @@ namespace TYB_AMI.Services
             if ((cycleDay - 1) % 7 == 0)
                 return new List<string> { "stroop", "memory" };
             return new List<string> { "math" };
+        }
+
+        /// <summary>
+        /// Checks whether every game required for the given cycle day is
+        /// present in stats.DailyProgress for serverDate. cycleDay must be
+        /// the day that was being played (captured before submitting a
+        /// score), since a completing submission advances stats.CycleDay
+        /// to the next day.
+        /// </summary>
+        public static bool IsDailyRequirementsMet(UserStats stats, int cycleDay, string serverDate){
+            if (string.IsNullOrEmpty(serverDate) || stats.DailyProgress.Date != serverDate) return false;
+            return RequiredGamesForCycleDay(cycleDay).All(id => stats.DailyProgress.CompletedGames.Contains(id));
         }
     }
 
@@ -157,8 +179,20 @@ namespace TYB_AMI.Services
 
         [JsonPropertyName("time_seconds")]
         public int TimeSeconds { get; set; }
-        
+
         [JsonPropertyName("cycle_day")]
         public int? CycleDay { get; set; }
+    }
+
+    public class TimeResponse
+    {
+        [JsonPropertyName("server_date")]
+        public string ServerDate { get; set; } = "";
+
+        [JsonPropertyName("server_time")]
+        public string ServerTime { get; set; } = "";
+
+        [JsonPropertyName("seconds_until_midnight")]
+        public int SecondsUntilMidnight { get; set; }
     }
 }

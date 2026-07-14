@@ -1,75 +1,54 @@
 @page "/daily"
 @inject TYB_AMI.Services.TYBAuthService AuthService
 
-<PageTitle>Daily Training</PageTitle>
+<PageTitle>Daily Exercise(s)</PageTitle>
 
 @if (_loading){
     <p>Loading...</p>
 }
 else if (!AuthService.IsAuthenticated){
-    <div class="practicePageContainer">
-    <h1>Daily Exercise(s)</h1>
-
-    <div class=practiceContainer>
-        <div class="practicePanel">
-            <h1>Math</h1>
-            <p class="practiceDesc">Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.</p>
-            
-            <div class="practicePlayMath">
-                <div class="iconButton">
-                    <a href="/mathPractice" class="practiceMath bi bi-play"></a>
-                </div>
-            </div>           
-        </div>
-        <div class="practicePanel">
-            <h1>Math</h1>
-            <p class="practiceDesc">Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.</p>
-            
-            <div class="practicePlayMath">
-                <div class="iconButton">
-                    <a href="/mathPractice" class="practiceMath bi bi-play"></a>
-                </div>
-            </div>           
-        </div>
-    </div>
-</div>
+    <p>Please login in</p>
 
 }
 else if (_stats == null){
     <p>Couldn't load your training data. Please refresh.</p>
 }
 else{
-    <h2>Day @_stats.CycleDay — Today's Training</h2>
+    <div class="practicePageContainer">
+        <h1>Day @_stats.CycleDay — Today's Training</h1>
 
-    @if (_allDone){
-        <p>You've completed all of today's exercises. Come back tomorrow!</p>
-    }
-    else{
-        <p>Complete the following exercises to continue your streak:</p>
-    }
-
-    <ul class="daily-checklist">
-        @foreach (var game in _requiredGames){
-            bool done = _completedToday.Contains(game.Id);
-
-            <li class="daily-checklist-item @(done ? "done" : "pending")">
-                <span class="check-indicator">@(done ? "✓" : "○")</span>
-                @if (done){
-                    // Already done — show name but no link needed
-                    <span class="game-name">@game.DisplayName</span>
-                }
-                else{
-                    <NavLink href="@game.Route" class="game-link">
-                        @game.DisplayName
-                    </NavLink>
-                }
-            </li>
+        @if (_allDone){
+            <p>You've completed all of today's exercises. Come back tomorrow!</p>
         }
-    </ul>
+        else{
+            <p>Complete the following exercises to continue your streak:</p>
+        }
 
-    <p class="streak-note">
-        Current streak: <strong>@_stats.Streak.Current</strong> day(s)
-    </p>
+        <div class="practiceContainer">
+            @foreach (var game in _requiredGames){
+                bool done = _completedToday.Contains(game.Id);
+                <div class="practicePanel">
+                    <h1>@game.DisplayName</h1>
+                    <p class="practiceDesc">@game.Description</p>
+
+                    <div class="completedDaily">
+                        <div class="doneIconButton">
+                            @if (done){
+                                <i class="bi bi-check-circle" style="font-size:2.5em;color:#ffffff;"></i>
+                            }
+                            else{
+                                <a href="@game.Route" class="@game.IconCssClass bi bi-play"></a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <p class="streak-note">
+            Current streak: <strong>@_stats.Streak.Current</strong> day(s)
+        </p>
+    </div>
 }
 
 @code {
@@ -81,9 +60,15 @@ else{
     private string _serverDate = "";
 
     private static readonly Dictionary<string, GameEntry> GameCatalog = new(){
-        ["memory"] = new GameEntry("memory", "Word Memory",  "/wordmemory"),
-        ["math"]   = new GameEntry("math",   "Math",         "/math"),
-        ["stroop"] = new GameEntry("stroop", "Stroop Test",  "/stroop"),
+        ["math"]   = new GameEntry("math",   "Math",         "/math",
+            "Answer 50 addition, subtraction, and multiplication problems as fast and accurately as possible.",
+            "practicePlayMath", "practiceMath"),
+        ["memory"] = new GameEntry("memory", "Word Memory",  "/wordmemory",
+            "Spend 2 minutes memorizing 30 words, then recall as many words as you can.",
+            "practicePlayMemory", "practiceMemory"),
+        ["stroop"] = new GameEntry("stroop", "Stroop Test",  "/stroop",
+            "Press the button with the same color as the word that is shown. Be as fast and accurate as possible.",
+            "practicePlayStroop", "practiceStroop"),
     };
 
     protected override async Task OnInitializedAsync(){
@@ -100,18 +85,8 @@ else{
     }
 
     private async Task FetchServerDate(){
-        try{
-            var response = await new System.Net.Http.HttpClient()
-                .GetAsync("https://abundantminds.org/wp-json/tyb/v1/time");
-            if (response.IsSuccessStatusCode){
-                var data = await response.Content
-                    .ReadFromJsonAsync<TimeResponse>();
-                _serverDate = data?.ServerDate ?? "";
-            }
-        }
-        catch{
-            _serverDate = "";
-        }
+        var data = await AuthService.GetServerTimeAsync();
+        _serverDate = data?.ServerDate ?? "";
     }
 
     private void UpdateDerivedState(){
@@ -148,9 +123,5 @@ else{
         AuthService.OnStatsChanged -= OnStatsUpdated;
     }
 
-    private record GameEntry(string Id, string DisplayName, string Route);
-    private class TimeResponse{
-        [System.Text.Json.Serialization.JsonPropertyName("server_date")]
-        public string ServerDate { get; set; } = "";
-    }
+    private record GameEntry(string Id, string DisplayName, string Route, string Description, string PanelCssClass, string IconCssClass);
 }

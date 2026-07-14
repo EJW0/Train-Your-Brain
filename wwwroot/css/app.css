@@ -633,11 +633,12 @@ code {
     background-color: #1565c0;
 }
 
-.chart-header {
+.chartHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1em;
+    width: 100%;
 }
 
 .chart-header button {
@@ -696,16 +697,31 @@ code {
             .practicePlayMath{background: linear-gradient(to bottom, rgb(255, 198, 163) 0%,rgb(255, 178, 176) 100%);}
             .practicePlayMemory{background: linear-gradient(to bottom, rgba(251,234,202,1) 0%,rgba(229,247,202,1) 100%);}
             .practicePlayStroop{background: linear-gradient(to bottom, rgba(210,245,221,1) 0%,rgba(210,234,245,1) 100%);}
+            .completedDaily {
+                background: linear-gradient(to bottom, rgb(242, 242, 242) 0%,rgb(99, 99, 99) 100%);
+                width: 4em;
+                height: 4em;
+                border-radius: 50%;
+            }
 
             .iconButton {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content:center;
-            transition: .55s;
-        }
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content:center;
+                transition: .55s;
+            }
+            .doneIconButton {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
         .iconButton a{
             font-size:2.5em;
             color: #ffffff;
@@ -738,3 +754,44 @@ code {
                 width: 45%;
                 height: 30%;
             }
+
+
+.statsTabContainer {
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2em;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 100%;
+}
+.graph {
+    width: 100%;
+}
+.statsInfoContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+    .statsSmall {
+        border: 1px solid rgb(201, 201, 201);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        width: 15%;
+        height: 100%;
+        
+    }
+    .statsHistory {
+        display: flex;
+        flex-direction: column;
+        width: 40%;
+        height: 100%;
+    }
+        .statsHistoryList {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }

@@ -12,10 +12,24 @@
 
         <p>This application was made by Emma Wang (emma24wang@gmail.com), Zoey Lapidus, and Simon Lapidus</p>
 
-        <p>GitHub Repo:</p>
+        <p>GitHub Repo: https://github.com/EJW0/Train-Your-Brain</p>
     </BodyTemplate>
+</Modal>
+<Modal @ref="bugModal"
+       Title="Bug Report"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
 
-    </Modal>
+    <BodyTemplate>
+        <p>Found something that doesn't seem right?</p>
+        <p>Pleas report it through this link [google form]</p>
+
+        <ul>Known bugs:
+            <li>For some Firefox users, inputting the same answer in a row during the Math exercise brings up the prompt, "Please input a number".</li>
+        </ul>
+    </BodyTemplate>
+</Modal>
 
 <div class="topBar">
     <div class="greeting">
@@ -29,15 +43,22 @@
             <span>Hello, guest!</span>
         }
     </div>
-    <button class="credits" @onclick ="ShowRules">
-        <p class="creditsButton">©</p>
-    </button>
+    <div class="miscButtons">
+        <button class="credits" @onclick ="ShowCredits">
+            <p class="creditsButton">©</p>
+        </button>
+        @* <button class="credits" @onclick ="ShowBug">
+            <p class="creditsButton bi bi-bug"></p>
+        </button> *@
+    </div>
 
 </div>
 
 @code {
     private bool _loading = true;
     private Modal creditsModal = default!;
+    private Modal bugModal = default!;
+
 
 
     protected override async Task OnInitializedAsync(){
@@ -47,8 +68,11 @@
         _loading = false;
         
     }
-    private async Task ShowRules(){
+    private async Task ShowCredits(){
         await creditsModal.ShowAsync();
+    }
+    private async Task ShowBug(){
+        await bugModal.ShowAsync();
     }
 }
 

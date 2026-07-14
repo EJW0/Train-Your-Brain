@@ -52,14 +52,20 @@
                         </div>
                     </div>
 
-                    <a href="/daily" class="viewDailyGames">
-                        Begin Day @stats.CycleDay
-                    </a>
-                    @* <div style="font-size: 0.8em; margin-top: 1em; color: rgb(255, 255, 255);">
-                        <p>Fully completed dates: @string.Join(", ", _fullyCompletedDates)</p>
-                        <p>Stats loaded: @(_stats != null)</p>
-                        <p>Calendar key: @_calendarKey</p>
-                    </div> *@
+                    @* <a href="/daily" class="viewDailyGames">
+                            Begin Day @stats.CycleDay
+                    </a> *@
+
+                    @if (!_todayComplete){
+                        <a href="/daily" class="viewDailyGames">
+                            Begin Day @stats.CycleDay
+                        </a>
+                    }
+                    else{
+                        <p class="viewDailyGames">
+                            Day Completed
+                        </p>
+                    }
                 </div>
 
                 <div class="calendar">
@@ -70,8 +76,7 @@
                         ReadOnly="true"
                         ShowCalendarWeek="false"
                         TValue="DateTime?" />
-                </div> 
-            
+                </div>   
             </div>
             
             <div id="bottomHalf">
@@ -85,8 +90,8 @@
                             <div class="panelRow2">
                                 <div class="panelHalf1">
                                     <p class="numDesc" id="mathAvg">Avg Time</p>
-                                    @if (mathStats.GamesPlayed != 0){
-                                        <p class="panelNum" id="mathNum">@(mathStats.TotalScore / mathStats.GamesPlayed)</p>
+                                    @if (mathStats.History.Count > 0){
+                                        <p class="panelNum" id="mathNum">@FormatTime((int)mathStats.History.Average(h => h.TimeSeconds))</p>
                                     }
                                     else{
                                         <p class="panelNum" id="mathNum">—:——</p>
@@ -105,7 +110,7 @@
                                     @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
-                                            <p id="margin0">@entry.Score</p>
+                                            <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
@@ -187,8 +192,8 @@
                             <div class="panelRow2">
                                 <div class="panelHalf1">
                                     <p class="numDesc" id="stroopAvg">Avg Time</p>
-                                    @if (stroopStats.GamesPlayed != 0){
-                                        <p class="panelNum" id="mathNum">@(stroopStats.TotalScore / stroopStats.GamesPlayed)</p>
+                                    @if (stroopStats.History.Count > 0){
+                                        <p class="panelNum" id="mathNum">@FormatTime((int)stroopStats.History.Average(h => h.TimeSeconds))</p>
                                     }
                                     else{
                                         <p class="panelNum" id="stroopNum">—:——</p>
@@ -207,7 +212,7 @@
                                     @foreach (var entry in stroopStats.History.AsEnumerable().Reverse().Take(3)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
-                                            <p id="margin0">@entry.Score</p>
+                                            <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
@@ -242,6 +247,8 @@
     private TYB_AMI.Services.UserStats? _stats;
     private HashSet<string> _fullyCompletedDates = new();
     private int _calendarKey = 0;
+    private bool _todayComplete = false;
+    private string _serverDate = "";
 
     protected override async Task OnInitializedAsync(){
         AuthService.OnStatsChanged += OnStatsUpdated;
@@ -252,6 +259,8 @@
         if (AuthService.IsAuthenticated){
             _stats = await AuthService.GetStatsAsync();
             BuildCompletedDates();
+            await FetchServerDate();
+            UpdateTodayComplete();
         }
         _statsLoading = false;
     }
@@ -272,6 +281,8 @@
 
     private async void OnStatsUpdated(){
         _stats = await AuthService.GetStatsAsync();
+        await FetchServerDate();
+        UpdateTodayComplete();  
         BuildCompletedDates();
         _calendarKey++;    
         await InvokeAsync(StateHasChanged);
@@ -286,5 +297,17 @@
         int m = seconds / 60;
         int s = seconds % 60;
         return m > 0 ? $"{m}m {s:D2}s" : $"{s}s";
+    }
+    private async Task FetchServerDate(){
+        var data = await AuthService.GetServerTimeAsync();
+        _serverDate = data?.ServerDate ?? "";
+    }
+
+    private void UpdateTodayComplete(){
+        if (_stats == null || string.IsNullOrEmpty(_serverDate)){
+            _todayComplete = false;
+            return;
+        }
+        _todayComplete = _stats.CompletedDates.Contains(_serverDate);
     }
 }

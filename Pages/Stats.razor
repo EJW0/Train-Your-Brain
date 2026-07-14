@@ -16,56 +16,238 @@ else if (_stats == null){
     <p>Couldn't load your stats. Please refresh.</p>
 }
 else{
-    <h3>Math</h3>
+    <Tabs EnableFadeEffect="true">
+        <Tab Title="Math" Active="true">
+            <Content>
+                <div class="statsTabContainer">
+                    <div class="chartHeader">
+                        <button @onclick="PreviousWeek" disabled="@(_week <= 1)">← Prev</button>
+                        <span><h2>Week @_week (Days @DayStart – @DayEnd)</h2></span>
+                        <button @onclick="NextWeek" disabled="@(_week >= _maxWeek)">Next →</button>
+                    </div>       
 
-    <div class="chart-header">
-        <button @onclick="PreviousWeek" disabled="@(_week <= 1)">← Prev</button>
-        <span>Week @_week (Days @DayStart – @DayEnd)</span>
-        <button @onclick="NextWeek">Next →</button>
-    </div>
+                    @if (!_chartData.Any()){
+                        <p class="no-data">No data for this week yet.</p>
+                    }
+                    else{
+                        <div class="graph">
+                            <RadzenChart>
+                                <RadzenLineSeries Data="@_chartData"
+                                                CategoryProperty="CycleDay"
+                                                ValueProperty="TimeSeconds"
+                                                Title="Time (seconds)"
+                                                Smooth="false">
+                                    <ChildContent>
+                                        <RadzenMarkers Visible="true"
+                                                    MarkerType="MarkerType.Circle" />
+                                    </ChildContent>
+                                    <TooltipTemplate Context="data">
+                                        <div><strong>Day @data.CycleDay</strong> <br />@data.TimeSeconds sec </div>
+                                    </TooltipTemplate>
+                                </RadzenLineSeries>
 
-    @if (!_chartData.Any())
-    {
-        <p class="no-data">No data for this week yet.</p>
-    }
-    else
-    {
-        <RadzenChart>
+                                <RadzenCategoryAxis Min="@DayStart" Max="@DayEnd" Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Day" />
+                                </RadzenCategoryAxis>
 
-            <RadzenLineSeries Data="@_chartData"
-                              CategoryProperty="CycleDay"
-                              ValueProperty="TimeSeconds"
-                              Title="Time (seconds)"
-                              Smooth="true">
-                <RadzenMarkers Visible="true"
-                               MarkerType="MarkerType.Circle" />
-                <RadzenSeriesDataLabels Visible="false" />
-            </RadzenLineSeries>
+                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Time (seconds)" />
+                                </RadzenValueAxis>
 
-            <RadzenCategoryAxis>
-                <RadzenAxisTitle Text="Cycle Day" />
-            </RadzenCategoryAxis>
+                                <RadzenLegend Visible="false" />
 
-            <RadzenValueAxis>
-                <RadzenAxisTitle Text="Time (seconds)" />
-            </RadzenValueAxis>
+                                <RadzenChartTooltipOptions Shared="false" />
+                            </RadzenChart>
+                        </div>
+                        <div class="statsInfoContainer">
+                            <div class="statsSmall">
+                                <p>Avg Accuracy</p>
+                                <p>@FormatAccuracy("math")</p>
+                            </div>
+                            <div class="statsSmall">
+                                <p>Avg Time</p>
+                                <p>@FormatAvgTime("math")</p>
+                            </div>
+                            <div class="statsSmall">
+                                <p>Best Time</p>
+                                <p>@FormatBestTime("math")</p>
+                            </div>
+                            <div class="statsHistory">
+                                <p>Scores History</p>
+                                <div class="statsHistoryList">
+                                    @foreach (var line in GetAllHistoryLines("math")){
+                                        <p>@line</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
 
-            <RadzenLegend Visible="false" />
+            </Content>
+        </Tab>
 
-            <RadzenChartTooltipOptions Shared="false" />
+        <Tab Title="Memory">
+            <Content>
+                <div class="statsTabContainer">
+                    <div class="chartHeader">
+                        <button @onclick="MemoryPreviousWeek" disabled="@(_memoryPage <= 1)">← Prev</button>
+                        <span><h2>Weeks @MemoryWeekStart – @MemoryWeekEnd</h2></span>
+                        <button @onclick="MemoryNextWeek" disabled="@(_memoryPage >= _weeklyMaxPage)">Next →</button>
+                    </div>
 
-        </RadzenChart>
-    }
+                    @if (!_memoryChartData.Any()){
+                        <p class="no-data">No data for these weeks yet.</p>
+                    }
+                    else{
+                        <div class="graph">
+                            <RadzenChart>
+                                <RadzenLineSeries Data="@_memoryChartData"
+                                                CategoryProperty="Week"
+                                                ValueProperty="Value"
+                                                Title="Words Recalled"
+                                                Smooth="false">
+                                    <ChildContent>
+                                        <RadzenMarkers Visible="true"
+                                                    MarkerType="MarkerType.Circle" />
+                                    </ChildContent>
+                                    <TooltipTemplate Context="data">
+                                        <div><strong>Week @data.Week</strong> <br />@data.Value words </div>
+                                    </TooltipTemplate>
+                                </RadzenLineSeries>
+
+                                <RadzenCategoryAxis Min="@MemoryWeekStart" Max="@MemoryWeekEnd" Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Week" />
+                                </RadzenCategoryAxis>
+
+                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Words Recalled" />
+                                </RadzenValueAxis>
+
+                                <RadzenLegend Visible="false" />
+
+                                <RadzenChartTooltipOptions Shared="false" />
+                            </RadzenChart>
+                        </div>
+                        <div class="statsInfoContainer">
+                            <div class="statsSmall">
+                                <p>Avg Score</p>
+                                <p>@FormatAvgScore("memory")</p>
+                            </div>
+                            <div class="statsSmall">
+                                <p>Highest Score</p>
+                                <p>@FormatBestScore("memory")</p>
+                            </div>
+                            <div class="statsHistory">
+                                <p>Scores History</p>
+                                <div class="statsHistoryList">
+                                    @foreach (var line in GetAllHistoryLines("memory")){
+                                        <p>@line</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </Content>
+        </Tab>
+
+        <Tab Title="Stroop Test">
+            <Content>
+                 <div class="statsTabContainer">
+                    <div class="chartHeader">
+                        <button @onclick="StroopPreviousWeek" disabled="@(_stroopPage <= 1)">← Prev</button>
+                        <span><h2>Weeks @StroopWeekStart – @StroopWeekEnd</h2></span>
+                        <button @onclick="StroopNextWeek" disabled="@(_stroopPage >= _weeklyMaxPage)">Next →</button>
+                    </div>
+
+                    @if (!_stroopChartData.Any()){
+                        <p class="no-data">No data for these weeks yet.</p>
+                    }
+                    else{
+                        <div class="graph">
+                            <RadzenChart>
+                                <RadzenLineSeries Data="@_stroopChartData"
+                                                CategoryProperty="Week"
+                                                ValueProperty="Value"
+                                                Title="Time (seconds)"
+                                                Smooth="false">
+                                    <ChildContent>
+                                        <RadzenMarkers Visible="true"
+                                                    MarkerType="MarkerType.Circle" />
+                                    </ChildContent>
+                                    <TooltipTemplate Context="data">
+                                        <div><strong>Week @data.Week</strong> <br />@data.Value sec </div>
+                                    </TooltipTemplate>
+                                </RadzenLineSeries>
+
+                                <RadzenCategoryAxis Min="@StroopWeekStart" Max="@StroopWeekEnd" Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Week" />
+                                </RadzenCategoryAxis>
+
+                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                    <RadzenAxisTitle Text="Time (seconds)" />
+                                </RadzenValueAxis>
+
+                                <RadzenLegend Visible="false" />
+
+                                <RadzenChartTooltipOptions Shared="false" />
+                            </RadzenChart>
+                        </div>
+                        <div class="statsInfoContainer">
+                            <div class="statsSmall">
+                                <p>Avg Accuracy</p>
+                                <p>@FormatAccuracy("stroop")</p>
+                            </div>
+                            <div class="statsSmall">
+                                <p>Avg Time</p>
+                                <p>@FormatAvgTime("stroop")</p>
+                            </div>
+                            <div class="statsSmall">
+                                <p>Best Time</p>
+                                <p>@FormatBestTime("stroop")</p>
+                            </div>
+                            <div class="statsHistory">
+                                <p>Scores History</p>
+                                <div class="statsHistoryList">
+                                    @foreach (var line in GetAllHistoryLines("stroop")){
+                                        <p>@line</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+
+    
+
+    
 }
 
 @code {
     private TYB_AMI.Services.UserStats? _stats;
     private bool _loading = true;
     private int _week = 1;
+    private int _maxWeek = 1;
     private List<ChartPoint> _chartData = new();
+
+    private int _stroopPage = 1;
+    private int _memoryPage = 1;
+    private int _weeklyMaxPage = 1;
+    private List<WeekChartPoint> _stroopChartData = new();
+    private List<WeekChartPoint> _memoryChartData = new();
 
     private int DayStart => (_week - 1) * 7 + 1;
     private int DayEnd   => DayStart + 6;
+
+    private int StroopWeekStart => (_stroopPage - 1) * 7 + 1;
+    private int StroopWeekEnd   => StroopWeekStart + 6;
+
+    private int MemoryWeekStart => (_memoryPage - 1) * 7 + 1;
+    private int MemoryWeekEnd   => MemoryWeekStart + 6;
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,6 +263,8 @@ else{
             _stats = await AuthService.GetStatsAsync();
             SetInitialWeek();
             BuildChartData();
+            BuildStroopChartData();
+            BuildMemoryChartData();
         }
 
         _loading = false;
@@ -89,7 +273,18 @@ else{
     private void SetInitialWeek()
     {
         if (_stats == null) return;
-        _week = Math.Max(1, (int)Math.Ceiling(_stats.CycleDay / 7.0));
+        UpdateMaxWeek();
+        _week = _maxWeek;
+        _weeklyMaxPage = Math.Max(1, (int)Math.Ceiling(_maxWeek / 7.0));
+        _stroopPage = _weeklyMaxPage;
+        _memoryPage = _weeklyMaxPage;
+    }
+
+    private void UpdateMaxWeek()
+    {
+        if (_stats == null) return;
+        _maxWeek = Math.Max(1, (int)Math.Ceiling(_stats.CycleDay / 7.0));
+        _weeklyMaxPage = Math.Max(1, (int)Math.Ceiling(_maxWeek / 7.0));
     }
 
     private void PreviousWeek()
@@ -103,8 +298,47 @@ else{
 
     private void NextWeek()
     {
-        _week++;
-        BuildChartData();
+        if (_week < _maxWeek)
+        {
+            _week++;
+            BuildChartData();
+        }
+    }
+
+    private void StroopPreviousWeek()
+    {
+        if (_stroopPage > 1)
+        {
+            _stroopPage--;
+            BuildStroopChartData();
+        }
+    }
+
+    private void StroopNextWeek()
+    {
+        if (_stroopPage < _weeklyMaxPage)
+        {
+            _stroopPage++;
+            BuildStroopChartData();
+        }
+    }
+
+    private void MemoryPreviousWeek()
+    {
+        if (_memoryPage > 1)
+        {
+            _memoryPage--;
+            BuildMemoryChartData();
+        }
+    }
+
+    private void MemoryNextWeek()
+    {
+        if (_memoryPage < _weeklyMaxPage)
+        {
+            _memoryPage++;
+            BuildMemoryChartData();
+        }
     }
 
     private void BuildChartData()
@@ -131,11 +365,99 @@ else{
             .ToList();
     }
 
+    private List<WeekChartPoint> BuildWeeklyChartData(string gameId, int weekStart, int weekEnd, Func<GameHistoryEntry, int> valueSelector)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var gameStats)) return new();
+
+        return gameStats.History
+            .Where(e => e.CycleDay > 0)
+            .Select(e => new { Week = (int)Math.Ceiling(e.CycleDay!.Value / 7.0), Value = valueSelector(e) })
+            .Where(x => x.Week >= weekStart && x.Week <= weekEnd)
+            .OrderBy(x => x.Week)
+            .Select(x => new WeekChartPoint { Week = x.Week, Value = x.Value })
+            .ToList();
+    }
+
+    private void BuildStroopChartData()
+    {
+        _stroopChartData = BuildWeeklyChartData("stroop", StroopWeekStart, StroopWeekEnd, e => e.TimeSeconds);
+    }
+
+    private void BuildMemoryChartData()
+    {
+        _memoryChartData = BuildWeeklyChartData("memory", MemoryWeekStart, MemoryWeekEnd, e => e.Score);
+    }
+
     private async void OnStatsUpdated()
     {
         _stats = await AuthService.GetStatsAsync();
+        UpdateMaxWeek();
         BuildChartData();
+        BuildStroopChartData();
+        BuildMemoryChartData();
         await InvokeAsync(StateHasChanged);
+    }
+
+    private string FormatTime(int seconds)
+    {
+        if (seconds <= 0) return "—";
+        int m = seconds / 60;
+        int s = seconds % 60;
+        return m > 0 ? $"{m}m {s:D2}s" : $"{s}s";
+    }
+
+    // Math and Stroop are both 50-question games, so accuracy is
+    // derived from the uncapped all-time Score/GamesPlayed totals
+    // rather than the (max 100-entry) History list.
+    private string FormatAccuracy(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g) || g.GamesPlayed == 0) return "—";
+        double pct = (double)g.TotalScore / (g.GamesPlayed * 50) * 100;
+        return $"{pct:0}%";
+    }
+
+    private string FormatAvgTime(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g)) return "—";
+        var timed = g.History.Where(h => h.TimeSeconds > 0).ToList();
+        if (timed.Count == 0) return "—";
+        return FormatTime((int)timed.Average(h => h.TimeSeconds));
+    }
+
+    private string FormatBestTime(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g) || g.BestTime <= 0) return "—";
+        return FormatTime(g.BestTime);
+    }
+
+    private string FormatAvgScore(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g) || g.GamesPlayed == 0) return "—";
+        return (g.TotalScore / g.GamesPlayed).ToString();
+    }
+
+    private string FormatBestScore(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g)) return "—";
+        return g.BestScore.ToString();
+    }
+
+    private string FormatHistoryLine(string gameId, GameHistoryEntry entry)
+    {
+        return gameId == "memory"
+            ? $"Day {entry.CycleDay ?? 0}: {entry.Score} words"
+            : $"Day {entry.CycleDay ?? 0}: {entry.Score}/50 ({FormatTime(entry.TimeSeconds)})";
+    }
+
+    private List<string> GetAllHistoryLines(string gameId)
+    {
+        if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g)) return new();
+
+        return g.History
+            .AsEnumerable()
+            .Reverse()
+            .Select(e => FormatHistoryLine(gameId, e))
+            .ToList();
     }
 
     public void Dispose()
@@ -147,5 +469,11 @@ else{
     {
         public int CycleDay    { get; set; }
         public int TimeSeconds { get; set; }
+    }
+
+    private class WeekChartPoint
+    {
+        public int Week  { get; set; }
+        public int Value { get; set; }
     }
 }

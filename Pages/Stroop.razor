@@ -27,6 +27,11 @@
             </Button>
         </FooterTemplate>
     </Modal>
+
+@if (dayCompleteMessage != null){
+    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000" Class="position-fixed bottom-0 end-0 m-3" Hidden="OnDayCompleteToastHidden" />
+}
+
 <button class="rulesButton" @onclick="ShowRules">?</button>
 @if (gameState == GameState.Loading){
     <h3>Loading...</h3>
@@ -101,11 +106,26 @@ else if (gameState == GameState.Results){
     private GameState gameState = GameState.Loading;
     private TYB_AMI.Services.UserStats? _stats;
     private bool showingInitialRules = true;
+    private int _cycleDayPlayed;
+    private string _serverDate = "";
+    private bool _dayAlreadyCompleteAtStart;
+    private ToastMessage? dayCompleteMessage;
     private enum GameState { Loading, Rules, Playing, Results }
 
     protected override void OnInitialized(){
         game.Reset();
         gameState = GameState.Rules;
+    }
+
+    protected override async Task OnInitializedAsync(){
+        var statsAtStart = await AuthService.GetStatsAsync();
+        var time = await AuthService.GetServerTimeAsync();
+        _serverDate = time?.ServerDate ?? "";
+
+        if (statsAtStart != null){
+            _cycleDayPlayed = statsAtStart.CycleDay;
+            _dayAlreadyCompleteAtStart = TYB_AMI.Services.TYBAuthService.IsDailyRequirementsMet(statsAtStart, _cycleDayPlayed, _serverDate);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender){
@@ -153,9 +173,14 @@ else if (gameState == GameState.Results){
         if (game.Finished){
             cts.Cancel();
             _flashColor = null;
-            gameState = GameState.Results; 
+            gameState = GameState.Results;
             _stats = await AuthService.SubmitScoreAsync("stroop", game.Score, elapsedSeconds);
             AuthService.NotifyStatsChanged();
+
+            if (!_dayAlreadyCompleteAtStart && _stats != null
+                && TYB_AMI.Services.TYBAuthService.IsDailyRequirementsMet(_stats, _cycleDayPlayed, _serverDate)){
+                ShowDayCompleteToast();
+            }
 
             await InvokeAsync(StateHasChanged);
             return;
@@ -231,5 +256,17 @@ else if (gameState == GameState.Results){
     private async Task ShowRules(){
         showingInitialRules = false;
         await rules.ShowAsync();
+    }
+
+    private void ShowDayCompleteToast(){
+        dayCompleteMessage = new ToastMessage{
+            Type = ToastType.Success,
+            Title = $"Day {_cycleDayPlayed} Completed!",
+            Message = $"Your streak is now {_stats!.Streak.Current} day(s)."
+        };
+    }
+
+    private void OnDayCompleteToastHidden(ToastEventArgs args){
+        dayCompleteMessage = null;
     }
 }

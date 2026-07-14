@@ -35,6 +35,10 @@
 
 </Modal>
 
+@if (dayCompleteMessage != null){
+    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000" Class="position-fixed bottom-0 end-0 m-3" Hidden="OnDayCompleteToastHidden" />
+}
+
 <div class="progressBar">
 <Progress Class="mb-3">
         <ProgressBar @ref="progressBar" />
@@ -141,6 +145,10 @@ else {
     private int? lastResponse;
     private TYB_AMI.Services.UserStats? _stats;
     private bool showingInitialRules = true;
+    private int _cycleDayPlayed;
+    private string _serverDate = "";
+    private bool _dayAlreadyCompleteAtStart;
+    private ToastMessage? dayCompleteMessage;
 
 
     public class AnswerLog{
@@ -178,6 +186,17 @@ else {
     protected override void OnInitialized(){
         for (int i = 0; i < 50; i++){
             problems.Add(new MathProblem());
+        }
+    }
+
+    protected override async Task OnInitializedAsync(){
+        var statsAtStart = await AuthService.GetStatsAsync();
+        var time = await AuthService.GetServerTimeAsync();
+        _serverDate = time?.ServerDate ?? "";
+
+        if (statsAtStart != null){
+            _cycleDayPlayed = statsAtStart.CycleDay;
+            _dayAlreadyCompleteAtStart = TYBAuthService.IsDailyRequirementsMet(statsAtStart, _cycleDayPlayed, _serverDate);
         }
     }
 
@@ -219,6 +238,11 @@ else {
             cts?.Cancel();
             _stats = await AuthService.SubmitScoreAsync("math", correctAnswers, elapsedSeconds);
             AuthService.NotifyStatsChanged();
+
+            if (!_dayAlreadyCompleteAtStart && _stats != null
+                && TYBAuthService.IsDailyRequirementsMet(_stats, _cycleDayPlayed, _serverDate)){
+                ShowDayCompleteToast();
+            }
         }
         userAnswer = null;
         
@@ -262,5 +286,16 @@ else {
         await rules.ShowAsync();
     }
 
+    private void ShowDayCompleteToast(){
+        dayCompleteMessage = new ToastMessage{
+            Type = ToastType.Success,
+            Title = $"Day {_cycleDayPlayed} Completed!",
+            Message = $"Your streak is now {_stats!.Streak.Current} day(s)."
+        };
+    }
+
+    private void OnDayCompleteToastHidden(ToastEventArgs args){
+        dayCompleteMessage = null;
+    }
 
 }
