@@ -38,17 +38,17 @@
 </Modal>
 
 <div class="progressBar">
-<Progress Class="mb-3">
-        <ProgressBar @ref="progressBar" />
-        @for (int i=0; i < 50; i++){
-            if (problems[i].isCorrect == true){
-                <ProgressBar Style="background-color: #80f74d;" Width="2" />
+    <Progress Class="mb-3">
+            <ProgressBar @ref="progressBar" />
+            @for (int i=0; i < 50; i++){
+                if (problems[i].isCorrect == true){
+                    <ProgressBar Style="background-color: #80f74d;" Width="2" />
+                }
+                if (problems[i].isCorrect == false){
+                    <ProgressBar Style="background-color: #FF0358;" Width="2" />
+                }
             }
-            if (problems[i].isCorrect == false){
-                <ProgressBar Style="background-color: #FF0358;" Width="2" />
-            }
-        }
-    </Progress>
+        </Progress>
 </div>
 
 <button class="rulesButton" @onclick="ShowRules">?</button>

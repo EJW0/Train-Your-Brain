@@ -191,7 +191,6 @@ code {
 }
 
 .upperInfo {
-    /* border: 1px solid darkgreen; */
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -227,7 +226,7 @@ code {
     text-align: center;
     padding: 0.7em;
     /* margin: 0.5em; */
-    font-size: 1.5em;
+    font-size: 1.8em;
     transition: transform 0.3s ease;
 }
 
@@ -277,6 +276,22 @@ code {
     height: 25rem; 
 }
 
+.memoryRecallLowerHalf {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    margin-top: 3em;
+}
+
+.memoryInput {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
 .memoryResponsesContainer {
     height: 50vh; 
     margin-top:2em;
@@ -306,6 +321,7 @@ code {
 .progressBar {
     height: 1.12em;
     border-radius: 7px;
+    margin-bottom: 2em;
 }
 
 .resultsContainer {
@@ -339,7 +355,7 @@ code {
 
 .mathPanel, .memoryPanel, .stroopPanel, .streakPanel, .calendar{
     border-radius: 20px;
-    filter: drop-shadow(4px 4px 1px rgb(220, 225, 225));
+    filter: drop-shadow(4px 4px 3px rgb(220, 225, 225));
 }
 
 #topHalf {
@@ -411,24 +427,60 @@ code {
 
 .calendar {
     display: flex;
+    flex-direction: column;
     width: 40%;
     height: 100%;
-    background-color: rgb(207, 167, 160);
-    justify-content: center;
+    background: linear-gradient(135deg, rgb(33, 78, 87) 0%,rgb(205, 167, 160) 100%);
+    align-items: center;
     padding: 10px;
+    overflow: hidden;
 }
+    .calendarTitle {
+        flex-shrink: 0;
+        margin: 0 0 0.4em 0;
+        color: white;
+        font-size: 1.3em;
+        font-weight: 600;
+        text-align: center;
+    }
+
     .rz-datepicker-inline {
         width: 100% !important;
+        flex: 1;
+        min-height: 0;
         border-radius: 20px !important;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
     }
 
-    .rz-datepicker-calendar {
-        width: 100% !important;
+    .rz-datepicker-inline .rz-datepicker-inline-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
     }
 
-    .rz-datepicker-calendar table {
+    .rz-datepicker-inline .rz-calendar {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+    }
+
+    .rz-datepicker-inline .rz-calendar-view-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        background: transparent;
+    }
+
+    .rz-datepicker-inline .rz-calendar-view-container table {
         width: 100% !important;
+        height: 100%;
     }
     .calendar-day-completed {
         background-color: #17bb1f !important;
@@ -535,6 +587,7 @@ code {
     justify-content: center;
     align-items: center;
     margin: 5em;
+    gap: 1em;
 }
 
 .stroopWord {
@@ -641,14 +694,34 @@ code {
     width: 100%;
 }
 
-.chart-header button {
-    padding: 0.3em 0.8em;
+.chartNavButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    padding: 0;
+    border: none;
+    background-color: #ffffff;
+    color: rgb(91, 91, 91);
+    font-size: 1.1em;
     cursor: pointer;
+    transition: background-color 0.2s;
+    border: 0.5px solid black;
 }
 
-.chart-header button:disabled {
-    opacity: 0.4;
+.chartNavButton:hover:not(:disabled) {
+    background-color: #ebebeb;
+}
+
+.chartNavButton:disabled {
+    border: none;
+    background-color: #dedede;
+    color: #ffffff;
     cursor: default;
+    opacity: 0.6;
 }
 
 .no-data {
@@ -756,42 +829,69 @@ code {
             }
 
 
+/* Blazor Bootstrap's <Tabs> renders .tab-content > .tab-pane with no
+   explicit height of their own, which breaks the height:100% chain
+   below them. Scoped with :has() so only the tab containing the
+   Stats page's tab content is affected, not every <Tabs> in the app. */
+.tab-content:has(.statsTabContainer),
+.tab-pane:has(.statsTabContainer) {
+    height: 100%;
+}
+
 .statsTabContainer {
-    border: 1px solid red;
     display: flex;
     flex-direction: column;
-    margin-top: 2em;
+    margin: auto;
     justify-content: center;
     align-items: center;
     width: auto;
     height: 100%;
+    overflow: hidden;
+    
 }
 .graph {
     width: 100%;
+    height: 70%;
+    margin-bottom: 3%;
 }
-.statsInfoContainer {
+.statsInfoContainer, .statsInfoContainerMemory {
     display: flex;
     justify-content: space-between;
     width: 100%;
     height: 100%;
+    min-height: 0;
+    overflow: hidden;
 }
-    .statsSmall {
+    .statsInfoContainerMemory{
+        justify-content: space-evenly;
+    }
+    .statsSmall, .statsHistory {
         border: 1px solid rgb(201, 201, 201);
         border-radius: 20px;
         display: flex;
         flex-direction: column;
         width: 15%;
-        height: 100%;
-        
+        height: 11em;
+        min-height: 0;
+        overflow: hidden;
+        text-align: center;
+        padding: 1em;
+
     }
     .statsHistory {
-        display: flex;
-        flex-direction: column;
         width: 40%;
-        height: 100%;
     }
         .statsHistoryList {
             overflow-y: auto;
-            flex: 1;
-            min-height: 0;
+            overflow-x: hidden;
+            height: 100%;
         }
+            .statsHistoryRow {
+                display: flex;
+                justify-content: space-between;
+                gap: 1em;
+                width: 100%;
+            }
+    .statsNum {
+        font-size: 3em;
+    }

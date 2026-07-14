@@ -37,20 +37,35 @@
         </Button>
     </FooterTemplate>
     </Modal>
+<Modal @ref="skip"
+       Title="Skip Timer?"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
 
+    <BodyTemplate>
+        <p>Are you sure you want to skip the timer and move on to the Recall phase?</p>
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="@(() => skip.HideAsync())">Cancel</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="ConfirmSkip">Skip</Button>
+    </FooterTemplate>
+</Modal>
 @if (dayCompleteMessage != null){
-    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000" Class="position-fixed bottom-0 end-0 m-3" Hidden="OnDayCompleteToastHidden" />
+    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000"  Class="position-fixed top-50 end-0 translate-middle-y me-3" Hidden="OnDayCompleteToastHidden" />
 }
 
 @if (gameState == GameState.Rules){
     <p></p>
 }
 else if (gameState == GameState.Memorize){
-
-    <h3>Memorize These Words</h3>
-    <div class="memorizeHeader">
+    <div class="upperInfo">
+        <h3>Memorize These Words</h3>
         <p>Time Remaining: @TimeSpan.FromSeconds(memorizeSeconds).ToString(@"mm\:ss")</p>
-        <Button Color="ButtonColor.Secondary" @onclick="SkipMemorize">Skip</Button>
+    </div>
+    <div class="memorizeHeader">
+        <Button Color="ButtonColor.Secondary" @onclick="@(() => skip.ShowAsync())">Skip</Button>
     </div>
     <ul>
         <div class="wordContainer">
@@ -63,21 +78,26 @@ else if (gameState == GameState.Memorize){
     </ul>
 }
 else if (gameState == GameState.Recall){
-    <h3>Type All The Words You Remember</h3>
-    <p>Time Remaining: @TimeSpan.FromSeconds(recallSeconds).ToString(@"mm\:ss")</p>
-
-    <EditForm Model=game OnSubmit="SubmitWord">
-        <TextInput @bind-Value="@currentInput" TextAlignment="Alignment.Center" class="wordInput"/>
-        <div class="buttonGroup">
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
-            <Button @onclick="FinishRecall" Color="ButtonColor.Danger">Done</Button>
+    <div class="upperInfo">
+        <h3>Type All The Words You Remember</h3>
+        <p>Time Remaining: @TimeSpan.FromSeconds(recallSeconds).ToString(@"mm\:ss")</p>
+    </div>
+    <div class="memoryRecallLowerHalf">
+        <div class="memoryInput">
+            <EditForm Model=game OnSubmit="SubmitWord" style="width: 80%;">
+                <TextInput @bind-Value="@currentInput" TextAlignment="Alignment.Center" class="wordInput"/>
+                <div class="buttonGroup">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+                    <Button @onclick="FinishRecall" Color="ButtonColor.Danger">Done</Button>
+                </div>
+            </EditForm>
         </div>
-    </EditForm>
 
-    <div class="responsesContainer memoryResponsesContainer" >
-        @foreach (var word in game.UserWords){
-            <p class="responses" style="padding: 1em;">@word</p>
-        }
+        <div class="responsesContainer memoryResponsesContainer" >
+            @foreach (var word in game.UserWords){
+                <p class="responses" style="padding: 1em;">@word</p>
+            }
+        </div>
     </div>
 }
 else if (gameState== GameState.TimeOver){
@@ -132,6 +152,7 @@ else if (gameState == GameState.Results){
 
 @code {
     private Modal rules = default!;
+    private Modal skip = default!;
     private WordMemorization game = new ();
     private string currentInput = "";
     private int memorizeSeconds = 120;
@@ -272,6 +293,10 @@ else if (gameState == GameState.Results){
         showingInitialRules = false;
         await rules.ShowAsync();
     }
+    private async Task ConfirmSkip(){
+        await skip.HideAsync();
+        await SkipMemorize();
+    }
 
     private void OnRulesHidden(){
         if (showingInitialRules){
@@ -287,7 +312,7 @@ else if (gameState == GameState.Results){
         dayCompleteMessage = new ToastMessage{
             Type = ToastType.Success,
             Title = $"Day {_cycleDayPlayed} Completed!",
-            Message = $"Your streak is now {_stats!.Streak.Current} day(s)."
+            Message = $"Your streak is now {_stats!.Streak.Current} days!"
         };
     }
 

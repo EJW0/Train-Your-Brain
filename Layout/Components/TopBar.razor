@@ -25,13 +25,24 @@
 
     <BodyTemplate>
         <p>Found something that doesn't seem right?</p>
-        <p>Pleas report it through this link [google form]</p>
+        <p>Please report it through this link [google form]</p>
 
         <ul>Known bugs:
             <li>For some Firefox users, inputting the same answer in a row during the Math exercise brings up the prompt, "Please input a number".</li>
         </ul>
     </BodyTemplate>
 </Modal>
+<Modal @ref="feedbackModal"
+       Title="Feedback"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
+
+    <BodyTemplate>
+        <p>If you have any feedback on the program, please tell us through this form [google form]</p>
+    </BodyTemplate>
+</Modal>
+
 
 <div class="topBar">
     <div class="greeting">
@@ -49,20 +60,23 @@
         <button class="credits" @onclick="ToggleFullscreen">
             <p class="creditsButton bi @(_isFullscreen ? "bi-fullscreen-exit" : "bi-fullscreen")"></p>
         </button>
+        <button class="credits" @onclick ="ShowFeedback">
+            <p class="creditsButton bi bi-pencil-square"></p>
+        </button>
+        <button class="credits" @onclick ="ShowBug">
+            <p class="creditsButton bi bi-bug"></p>
+        </button>
         <button class="credits" @onclick ="ShowCredits">
             <p class="creditsButton">©</p>
         </button>
-        @* <button class="credits" @onclick ="ShowBug">
-            <p class="creditsButton bi bi-bug"></p>
-        </button> *@
     </div>
-
 </div>
 
 @code {
     private bool _loading = true;
     private Modal creditsModal = default!;
     private Modal bugModal = default!;
+    private Modal feedbackModal = default!;
     private bool _isFullscreen = false;
     private bool _fullscreenInitialized;
     private DotNetObjectReference<TopBar>? _dotNetRef;
@@ -98,6 +112,9 @@
     }
     private async Task ShowBug(){
         await bugModal.ShowAsync();
+    }
+    private async Task ShowFeedback(){
+        await feedbackModal.ShowAsync();
     }
 
     public async ValueTask DisposeAsync(){

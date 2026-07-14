@@ -37,7 +37,7 @@
 </Modal>
 
 @if (dayCompleteMessage != null){
-    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000" Class="position-fixed bottom-0 end-0 m-3" Hidden="OnDayCompleteToastHidden" />
+    <Toast ToastMessage="@dayCompleteMessage" AutoHide="true" Delay="6000" Class="position-fixed top-50 end-0 translate-middle-y me-3" Hidden="OnDayCompleteToastHidden" />
 }
 
 <div class="progressBar">
@@ -285,7 +285,7 @@ else {
         dayCompleteMessage = new ToastMessage{
             Type = ToastType.Success,
             Title = $"Day {_cycleDayPlayed} Completed!",
-            Message = $"Your streak is now {_stats!.Streak.Current} day(s)."
+            Message = $"Your streak is now {_stats!.Streak.Current} days!"
         };
     }
 

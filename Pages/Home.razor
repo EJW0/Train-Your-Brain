@@ -5,29 +5,16 @@
 @using Radzen.Blazor
 
 <PageTitle>Home</PageTitle>
-<h1>
-    @if (_loading){
-        <div class="loading">
-            <span>Loading...</span>
-            <Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Primary" />
-        </div>
-    }
-</h1>
 
-@* @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
-    <div class="recentScoreRow">
-        <p id="margin0">@entry.Date</p>
-        <p id="margin0">@entry.Score</p>
-        <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
-    </div>
-} *@
 
 @if (!_loading && AuthService.IsAuthenticated){
     @if (_statsLoading){
-        <div class="loading">
-            <p>Loading your stats...</p>
-            <Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Primary" />
-        </div>
+        <h1>
+            <div class="loading">
+                <span>Loading...</span>
+                <Spinner Type="SpinnerType.Dots" Class="me-3" Size="SpinnerSize.Large" Color="SpinnerColor.Primary" />
+            </div>
+        </h1>
     }
     else if (_stats != null){
         var stats = _stats;
@@ -69,6 +56,7 @@
                 </div>
 
                 <div class="calendar">
+                    <p class="calendarTitle">Streak Calendar</p>
                     <RadzenDatePicker
                         @key="_calendarKey"
                         Inline="true"

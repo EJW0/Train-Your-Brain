@@ -7,11 +7,11 @@
 
 <div class="sideBar">
     <div class="sidebarLogo">
-        @* <img src="logo.png" alt="Train Your Brain Logo" /> *@
-        logo
+        <img src="AMI_Logo.svg" alt="Train Your Brain Logo" />
     </div>
 
-    <div class="dayWeekContainer">
+    @* <div class="container2"> *@
+        <div class="dayWeekContainer">
             @if (_stats != null){
                 <p class="weekLabel">Week @((int)Math.Ceiling(_stats.CycleDay / 7.0))</p>
             }
@@ -19,50 +19,49 @@
                 <strong><p class="dayCounter">Day @(_stats?.CycleDay.ToString() ?? "—")</p></strong>
                 @if (_todayComplete){
                     <p class="countdown">@_countdownDisplay</p>
-                }
-                
+                }  
             </div>
         </div>
 
-    <nav class="sidebarNav">        
-        
-        @if (!_todayComplete){
-            <NavLink href="/daily" class="specialDayButton" draggable="false">
-                <div class="dayIconCircle">
-                    <i class="bi bi-play-fill"></i>
+        <nav class="sidebarNav">        
+            @if (!_todayComplete){
+                <NavLink href="/daily" class="specialDayButton" draggable="false">
+                    <div class="dayIconCircle">
+                        <i class="bi bi-play-fill"></i>
+                    </div>
+                    <span id="beginDay">Begin Day @(_stats?.CycleDay.ToString() ?? "—")</span>
+                </NavLink>
+            }
+            <NavLink href="/" Match="NavLinkMatch.All" class="sidebarButton" draggable="false">
+                <div class="iconCircle">
+                    <i class="bi bi-house-door-fill"></i>
                 </div>
-                <span id="beginDay">Begin Day @(_stats?.CycleDay.ToString() ?? "—")</span>
+                <span>Home</span>
             </NavLink>
-        }
-        <NavLink href="/" Match="NavLinkMatch.All" class="sidebarButton" draggable="false">
-            <div class="iconCircle">
-                <i class="bi bi-house-door-fill"></i>
-            </div>
-            <span>Home</span>
-        </NavLink>
 
-        <NavLink href="/stats" class="sidebarButton" ActiveClass="active" draggable="false">
-            <div class="iconCircle">
-                <i class="bi bi-bar-chart-fill"></i>
-            </div>
-            <span>Stats</span>
-        </NavLink>
+            <NavLink href="/stats" class="sidebarButton" ActiveClass="active" draggable="false">
+                <div class="iconCircle">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </div>
+                <span>Stats</span>
+            </NavLink>
 
-        <NavLink href="/practice" class="sidebarButton" ActiveClass="active" draggable="false">
-            <div class="iconCircle">
-                <i class="bi bi-lightning-fill"></i>
-            </div>
-            <span>Practice</span>
-        </NavLink>
+            <NavLink href="/practice" class="sidebarButton" ActiveClass="active" draggable="false">
+                <div class="iconCircle">
+                    <i class="bi bi-lightning-fill"></i>
+                </div>
+                <span>Practice</span>
+            </NavLink>
 
-        <NavLink href="/resources" class="sidebarButton" ActiveClass="active" draggable="false">
-            <div class="iconCircle">
-                <i class="bi bi-book-half"></i>
-            </div>
-            <span>Resources</span>
-        </NavLink>
+            <NavLink href="/resources" class="sidebarButton" ActiveClass="active" draggable="false">
+                <div class="iconCircle">
+                    <i class="bi bi-book-half"></i>
+                </div>
+                <span>Resources</span>
+            </NavLink>
 
-    </nav>
+        </nav>
+    @* </div> *@
 
 </div>
 @code {

@@ -4,7 +4,12 @@
 <PageTitle>Daily Exercise(s)</PageTitle>
 
 @if (_loading){
-    <p>Loading...</p>
+    <h1>    
+        <div class="loading">
+            <span>Loading...</span>
+            <Spinner Type="SpinnerType.Dots" Class="me-3" Size="SpinnerSize.Large" Color="SpinnerColor.Primary" />
+        </div>
+    </h1>
 }
 else if (!AuthService.IsAuthenticated){
     <p>Please login in</p>

@@ -1,29 +1,32 @@
 @page "/stats"
 @inject TYB_AMI.Services.TYBAuthService AuthService
 @implements IDisposable
-
 @using Radzen
 @using Radzen.Blazor
 
 <PageTitle>Stats</PageTitle>
 
-<h2>Your Stats</h2>
-
 @if (_loading){
-    <p>Loading...</p>
+   <h1>    
+        <div class="loading">
+            <span>Loading...</span>
+            <Spinner Type="SpinnerType.Dots" Class="me-3" Size="SpinnerSize.Large" Color="SpinnerColor.Primary" />
+        </div>
+    </h1>
 }
 else if (_stats == null){
     <p>Couldn't load your stats. Please refresh.</p>
 }
 else{
+    <h2>Your Stats</h2>
     <Tabs EnableFadeEffect="true">
         <Tab Title="Math" Active="true">
             <Content>
                 <div class="statsTabContainer">
                     <div class="chartHeader">
-                        <button @onclick="PreviousWeek" disabled="@(_week <= 1)">← Prev</button>
+                        <button class="chartNavButton" @onclick="PreviousWeek" disabled="@(_week <= 1)"><i class="bi bi-arrow-left"></i></button>
                         <span><h2>Week @_week (Days @DayStart – @DayEnd)</h2></span>
-                        <button @onclick="NextWeek" disabled="@(_week >= _maxWeek)">Next →</button>
+                        <button class="chartNavButton" @onclick="NextWeek" disabled="@(_week >= _maxWeek)"><i class="bi bi-arrow-right"></i></button>
                     </div>       
 
                     @if (!_chartData.Any()){
@@ -62,21 +65,25 @@ else{
                         <div class="statsInfoContainer">
                             <div class="statsSmall">
                                 <p>Avg Accuracy</p>
-                                <p>@FormatAccuracy("math")</p>
+                                <p class="statsNum">@FormatAccuracy("math")</p>
                             </div>
                             <div class="statsSmall">
                                 <p>Avg Time</p>
-                                <p>@FormatAvgTime("math")</p>
+                                <p class="statsNum">@FormatAvgTime("math")</p>
                             </div>
                             <div class="statsSmall">
                                 <p>Best Time</p>
-                                <p>@FormatBestTime("math")</p>
+                                <p class="statsNum">@FormatBestTime("math")</p>
                             </div>
                             <div class="statsHistory">
                                 <p>Scores History</p>
                                 <div class="statsHistoryList">
-                                    @foreach (var line in GetAllHistoryLines("math")){
-                                        <p>@line</p>
+                                    @foreach (var row in GetHistoryRows("math")){
+                                        <div class="statsHistoryRow">
+                                            @foreach (var part in row){
+                                                <p>@part</p>
+                                            }
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -91,9 +98,9 @@ else{
             <Content>
                 <div class="statsTabContainer">
                     <div class="chartHeader">
-                        <button @onclick="MemoryPreviousWeek" disabled="@(_memoryPage <= 1)">← Prev</button>
+                        <button class="chartNavButton" @onclick="MemoryPreviousWeek" disabled="@(_memoryPage <= 1)"><i class="bi bi-arrow-left"></i></button>
                         <span><h2>Weeks @MemoryWeekStart – @MemoryWeekEnd</h2></span>
-                        <button @onclick="MemoryNextWeek" disabled="@(_memoryPage >= _weeklyMaxPage)">Next →</button>
+                        <button class="chartNavButton" @onclick="MemoryNextWeek" disabled="@(_memoryPage >= _weeklyMaxPage)"><i class="bi bi-arrow-right"></i></button>
                     </div>
 
                     @if (!_memoryChartData.Any()){
@@ -129,20 +136,24 @@ else{
                                 <RadzenChartTooltipOptions Shared="false" />
                             </RadzenChart>
                         </div>
-                        <div class="statsInfoContainer">
+                        <div class="statsInfoContainerMemory">
                             <div class="statsSmall">
                                 <p>Avg Score</p>
-                                <p>@FormatAvgScore("memory")</p>
+                                <p class="statsNum">@FormatAvgScore("memory")</p>
                             </div>
                             <div class="statsSmall">
                                 <p>Highest Score</p>
-                                <p>@FormatBestScore("memory")</p>
+                                <p class="statsNum">@FormatBestScore("memory")</p>
                             </div>
                             <div class="statsHistory">
                                 <p>Scores History</p>
                                 <div class="statsHistoryList">
-                                    @foreach (var line in GetAllHistoryLines("memory")){
-                                        <p>@line</p>
+                                    @foreach (var row in GetHistoryRows("memory")){
+                                        <div class="statsHistoryRow">
+                                            @foreach (var part in row){
+                                                <p>@part</p>
+                                            }
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -156,9 +167,9 @@ else{
             <Content>
                  <div class="statsTabContainer">
                     <div class="chartHeader">
-                        <button @onclick="StroopPreviousWeek" disabled="@(_stroopPage <= 1)">← Prev</button>
+                        <button class="chartNavButton" @onclick="StroopPreviousWeek" disabled="@(_stroopPage <= 1)"><i class="bi bi-arrow-left"></i></button>
                         <span><h2>Weeks @StroopWeekStart – @StroopWeekEnd</h2></span>
-                        <button @onclick="StroopNextWeek" disabled="@(_stroopPage >= _weeklyMaxPage)">Next →</button>
+                        <button class="chartNavButton" @onclick="StroopNextWeek" disabled="@(_stroopPage >= _weeklyMaxPage)"><i class="bi bi-arrow-right"></i></button>
                     </div>
 
                     @if (!_stroopChartData.Any()){
@@ -197,21 +208,25 @@ else{
                         <div class="statsInfoContainer">
                             <div class="statsSmall">
                                 <p>Avg Accuracy</p>
-                                <p>@FormatAccuracy("stroop")</p>
+                                <p class="statsNum">@FormatAccuracy("stroop")</p>
                             </div>
                             <div class="statsSmall">
                                 <p>Avg Time</p>
-                                <p>@FormatAvgTime("stroop")</p>
+                                <p class="statsNum">@FormatAvgTime("stroop")</p>
                             </div>
                             <div class="statsSmall">
                                 <p>Best Time</p>
-                                <p>@FormatBestTime("stroop")</p>
+                                <p class="statsNum">@FormatBestTime("stroop")</p>
                             </div>
                             <div class="statsHistory">
                                 <p>Scores History</p>
                                 <div class="statsHistoryList">
-                                    @foreach (var line in GetAllHistoryLines("stroop")){
-                                        <p>@line</p>
+                                    @foreach (var row in GetHistoryRows("stroop")){
+                                        <div class="statsHistoryRow">
+                                            @foreach (var part in row){
+                                                <p>@part</p>
+                                            }
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -220,11 +235,7 @@ else{
                 </div>
             </Content>
         </Tab>
-    </Tabs>
-
-    
-
-    
+    </Tabs>    
 }
 
 @code {
@@ -452,21 +463,25 @@ else{
         return g.BestScore.ToString();
     }
 
-    private string FormatHistoryLine(string gameId, GameHistoryEntry entry)
+    private List<string> FormatHistoryRow(string gameId, GameHistoryEntry entry)
     {
-        return gameId == "memory"
-            ? $"Day {entry.CycleDay ?? 0}: {entry.Score} words"
-            : $"Day {entry.CycleDay ?? 0}: {entry.Score}/50 ({FormatTime(entry.TimeSeconds)})";
+        string day = $"Day {entry.CycleDay ?? 0}";
+
+        if (gameId == "memory"){
+            return new List<string> { day, $"{entry.Score} words", entry.Date };
+        }
+
+        return new List<string> { day, $"{entry.Score}/50", FormatTime(entry.TimeSeconds), entry.Date };
     }
 
-    private List<string> GetAllHistoryLines(string gameId)
+    private List<List<string>> GetHistoryRows(string gameId)
     {
         if (_stats == null || !_stats.Games.TryGetValue(gameId, out var g)) return new();
 
         return g.History
             .AsEnumerable()
             .Reverse()
-            .Select(e => FormatHistoryLine(gameId, e))
+            .Select(e => FormatHistoryRow(gameId, e))
             .ToList();
     }
 
