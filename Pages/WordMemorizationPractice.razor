@@ -8,7 +8,8 @@
        Title="Rules"
        UseStaticBackdrop="true"
        CloseOnEscape="false"
-       IsVerticallyCentered="true">
+       IsVerticallyCentered="true"
+       OnHidden="OnRulesHidden">
 
     <BodyTemplate>
         @if (showingInitialRules){
@@ -26,7 +27,7 @@
     </BodyTemplate>
 
     <FooterTemplate>
-        <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+        <Button Color="ButtonColor.Primary" @onclick="@(() => rules.HideAsync())">
             @if (showingInitialRules){
                 <p style="margin:0">Start Quiz</p>
             }
@@ -244,8 +245,7 @@ else if (gameState == GameState.Results){
         await rules.ShowAsync();
     }
 
-    private async Task CloseRules(){
-        await rules.HideAsync();
+    private void OnRulesHidden(){
         if (showingInitialRules){
             showingInitialRules = false;
 

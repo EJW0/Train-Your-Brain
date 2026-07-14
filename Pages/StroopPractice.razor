@@ -1,13 +1,16 @@
 @page "/stroopPractice"
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Web
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 
 <PageTitle>Stroop Test</PageTitle>
 <Modal @ref="rules"
            Title="Rules"
            UseStaticBackdrop="true"
            CloseOnEscape="false"
-           IsVerticallyCentered="true">
+           IsVerticallyCentered="true"
+           OnHidden="OnRulesHidden">
 
         <BodyTemplate>
             <p>Select the <strong>color</strong> of the word, not what the word says.</p>
@@ -17,7 +20,7 @@
         </BodyTemplate>
 
         <FooterTemplate>
-            <Button Color="ButtonColor.Primary" @onclick="CloseRules">
+            <Button Color="ButtonColor.Primary" @onclick="@(() => rules.HideAsync())">
                 @if (showingInitialRules){
                     <p style="margin:0">Start Test</p>
                 }
@@ -36,10 +39,7 @@ else if (gameState == GameState.Rules){
 }
 else if (gameState == GameState.Playing)
 {
-    <div class="stroopGame"
-     tabindex="0"
-     @ref="gameArea"
-     @onkeydown="HandleKeyDown">
+    <div class="stroopGame">
         <div class="upperInfo">
             <p>Progress @(game.CurrentQuestion) / 50</p>
             <p>Score: @game.Score</p>
@@ -91,8 +91,8 @@ else if (gameState == GameState.Results){
 @code {
 
     private StroopGame game = new();
-    private ElementReference gameArea;
     private Modal rules = default!;
+    private DotNetObjectReference<StroopPractice>? _dotNetRef;
     private bool modalShown;
     private int elapsedSeconds;
     private bool _resetting = false;
@@ -110,14 +110,39 @@ else if (gameState == GameState.Results){
     protected override async Task OnAfterRenderAsync(bool firstRender){
         if (firstRender && !modalShown){
             modalShown = true;
+
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("stroopKeys.register", _dotNetRef);
+
             await Task.Yield();
             await rules.ShowAsync();
         }
     }
 
-    private async Task CloseRules(){
-        await rules.HideAsync();
+    [JSInvokable]
+    public async Task OnGlobalKeyDown(string key, bool repeat){
+        if (repeat) return;
+        if (gameState != GameState.Playing) return;
 
+        switch (key){
+            case "ArrowUp":
+                await Submit(StroopColor.Red);
+                break;
+            case "ArrowLeft":
+                await Submit(StroopColor.Green);
+                break;
+            case "ArrowRight":
+                await Submit(StroopColor.Blue);
+                break;
+            case "ArrowDown":
+                await Submit(StroopColor.Yellow);
+                break;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnRulesHidden(){
         if (showingInitialRules){
             showingInitialRules = false;
 
@@ -128,7 +153,6 @@ else if (gameState == GameState.Results){
             _ = RunTimer();
 
             await InvokeAsync(StateHasChanged);
-            await gameArea.FocusAsync();
         }
     }
 
@@ -186,9 +210,14 @@ else if (gameState == GameState.Results){
         };
     }
 
-    public void Dispose(){
+    public async ValueTask DisposeAsync(){
         cts.Cancel();
         cts.Dispose();
+
+        if (_dotNetRef != null){
+            await JS.InvokeVoidAsync("stroopKeys.unregister");
+            _dotNetRef.Dispose();
+        }
     }
     private string GetFlashClass(StroopColor color){
         if (_flashColor == color)
@@ -203,27 +232,6 @@ else if (gameState == GameState.Results){
         StroopColor.Yellow => "yellow",
         _ => ""
     };
-    private async Task HandleKeyDown(KeyboardEventArgs e){
-        if (e.Repeat)
-            return;
-        if (gameState != GameState.Playing)
-            return;
-        switch (e.Key){
-            case "ArrowUp":
-                await Submit(StroopColor.Red);
-                break;
-            case "ArrowLeft":
-                await Submit(StroopColor.Green);
-                break;
-            case "ArrowRight":
-                await Submit(StroopColor.Blue);
-                break;
-            case "ArrowDown":
-                await Submit(StroopColor.Yellow);
-                break;
-        }
-    }
-
     private async Task ShowRules(){
         showingInitialRules = false;
         await rules.ShowAsync();

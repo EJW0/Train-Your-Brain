@@ -6,7 +6,8 @@
        Title="Rules"
        UseStaticBackdrop="true"
        CloseOnEscape="false"
-       IsVerticallyCentered="true">
+       IsVerticallyCentered="true"
+       OnHidden="OnRulesHidden">
 
     <BodyTemplate>
         @if (showingInitialRules){
@@ -24,7 +25,7 @@
 
     <FooterTemplate>
         <Button Color="ButtonColor.Primary"
-                @onclick="CloseRules">
+                @onclick="@(() => rules.HideAsync())">
             @if (showingInitialRules){
                 <p style="margin:0">Begin</p>
             }
@@ -156,9 +157,7 @@ else {
         }
     }
 
-    private async Task CloseRules(){
-        await rules.HideAsync();
-
+    private void OnRulesHidden(){
         if (showingInitialRules)
         {
             showingInitialRules = false;

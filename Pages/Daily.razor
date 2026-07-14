@@ -21,7 +21,7 @@ else{
             <p>You've completed all of today's exercises. Come back tomorrow!</p>
         }
         else{
-            <p>Complete the following exercises to continue your streak:</p>
+            <p>Complete the following exercise(s) to continue your streak</p>
         }
 
         <div class="practiceContainer">
@@ -31,8 +31,8 @@ else{
                     <h1>@game.DisplayName</h1>
                     <p class="practiceDesc">@game.Description</p>
 
-                    <div class="completedDaily">
-                        <div class="doneIconButton">
+                    <div class="@(done ? "completedDaily" : game.PanelCssClass)">
+                        <div class="@(done ? "doneIconButton" : "iconButton")">
                             @if (done){
                                 <i class="bi bi-check-circle" style="font-size:2.5em;color:#ffffff;"></i>
                             }

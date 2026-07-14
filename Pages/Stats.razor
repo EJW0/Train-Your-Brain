@@ -50,7 +50,7 @@ else{
                                     <RadzenAxisTitle Text="Day" />
                                 </RadzenCategoryAxis>
 
-                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                <RadzenValueAxis Step="1" Formatter="@(v => YAxisOnlyDataValues(v, _chartData.Select(d => d.TimeSeconds)))">
                                     <RadzenAxisTitle Text="Time (seconds)" />
                                 </RadzenValueAxis>
 
@@ -120,7 +120,7 @@ else{
                                     <RadzenAxisTitle Text="Week" />
                                 </RadzenCategoryAxis>
 
-                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                <RadzenValueAxis Step="1" Formatter="@(v => YAxisOnlyDataValues(v, _memoryChartData.Select(d => d.Value)))">
                                     <RadzenAxisTitle Text="Words Recalled" />
                                 </RadzenValueAxis>
 
@@ -185,7 +185,7 @@ else{
                                     <RadzenAxisTitle Text="Week" />
                                 </RadzenCategoryAxis>
 
-                                <RadzenValueAxis Step="1" FormatString="{0:0}">
+                                <RadzenValueAxis Step="1" Formatter="@(v => YAxisOnlyDataValues(v, _stroopChartData.Select(d => d.Value)))">
                                     <RadzenAxisTitle Text="Time (seconds)" />
                                 </RadzenValueAxis>
 
@@ -396,6 +396,16 @@ else{
         BuildStroopChartData();
         BuildMemoryChartData();
         await InvokeAsync(StateHasChanged);
+    }
+
+    // Radzen still generates one tick per whole-number Step across the
+    // axis range, but returning "" from Formatter suppresses that tick's
+    // label (and its tick mark) entirely — so only ticks matching an
+    // actual data point end up visible on the axis.
+    private string YAxisOnlyDataValues(object value, IEnumerable<int> dataValues)
+    {
+        int v = Convert.ToInt32(value);
+        return dataValues.Contains(v) ? v.ToString() : "";
     }
 
     private string FormatTime(int seconds)

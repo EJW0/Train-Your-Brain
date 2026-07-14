@@ -1,5 +1,7 @@
 @using TYB_AMI.Layout.Components
+@implements IAsyncDisposable
 @inject TYB_AMI.Services.TYBAuthService AuthService
+@inject IJSRuntime JS
 
 <Modal @ref="creditsModal"
        Title="Credits"
@@ -44,6 +46,9 @@
         }
     </div>
     <div class="miscButtons">
+        <button class="credits" @onclick="ToggleFullscreen">
+            <p class="creditsButton bi @(_isFullscreen ? "bi-fullscreen-exit" : "bi-fullscreen")"></p>
+        </button>
         <button class="credits" @onclick ="ShowCredits">
             <p class="creditsButton">©</p>
         </button>
@@ -58,21 +63,48 @@
     private bool _loading = true;
     private Modal creditsModal = default!;
     private Modal bugModal = default!;
-
-
+    private bool _isFullscreen = false;
+    private bool _fullscreenInitialized;
+    private DotNetObjectReference<TopBar>? _dotNetRef;
 
     protected override async Task OnInitializedAsync(){
         for (int i = 0; i < 50 && !AuthService.IsAuthenticated; i++){
             await Task.Delay(100);
         }
         _loading = false;
-        
+
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (firstRender && !_fullscreenInitialized){
+            _fullscreenInitialized = true;
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("fullscreenHelper.register", _dotNetRef);
+        }
+    }
+
+    private async Task ToggleFullscreen(){
+        await JS.InvokeVoidAsync("fullscreenHelper.toggle");
+    }
+
+    [JSInvokable]
+    public async Task OnFullscreenChanged(bool isFullscreen){
+        _isFullscreen = isFullscreen;
+        await InvokeAsync(StateHasChanged);
+    }
+
     private async Task ShowCredits(){
         await creditsModal.ShowAsync();
     }
     private async Task ShowBug(){
         await bugModal.ShowAsync();
+    }
+
+    public async ValueTask DisposeAsync(){
+        if (_dotNetRef != null){
+            await JS.InvokeVoidAsync("fullscreenHelper.unregister");
+            _dotNetRef.Dispose();
+        }
     }
 }
 
