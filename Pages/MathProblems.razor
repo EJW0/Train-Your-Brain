@@ -94,9 +94,6 @@ else {
                     <h2>Time - @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
                     <h2>Score: @correctAnswers / @problems.Count</h2>
                 </div>
-                @if (_stats != null){
-                    <p>Current streak: @_stats.Streak.Current day(s)</p>
-                }
             </Content>
         </Tab>
         <Tab Title="Responses">
