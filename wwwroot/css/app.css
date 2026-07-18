@@ -531,7 +531,7 @@ code {
 .gamePanels {
     display: flex;
     justify-content: space-between;
-    height: 88%;
+    height: 80%;
     width: 100%;
     gap: 3em;
 }
@@ -563,11 +563,11 @@ code {
 .panelRow2 {
     display: flex;
     justify-content: space-around;
-    height: 40%;
+    height: 35%;
 }
 
 .panelRow3 {
-    height: 40%;
+    height: auto;
     padding: 0px 0.5em;
 }
 

@@ -111,14 +111,14 @@
                                 <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (mathStats.History.Count > 0){
-                                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(4)){
+                                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 4 - rowCount; i++){
+                                    @for (int i = 0; i < 3 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -126,7 +126,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 4; i++){
+                                    @for (int i = 0; i < 3; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -167,14 +167,14 @@
                                 <p class="recentScoresTitle" id="memoryRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (memoryStats.History.Count > 0){
-                                    @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(4)){
+                                    @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(3)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@entry.Score</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 4 - rowCount; i++){
+                                    @for (int i = 0; i < 3 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -182,7 +182,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 4; i++){
+                                    @for (int i = 0; i < 3; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -223,14 +223,14 @@
                                 <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (stroopStats.History.Count > 0){
-                                    @foreach (var entry in stroopStats.History.AsEnumerable().Reverse().Take(4)){
+                                    @foreach (var entry in stroopStats.History.AsEnumerable().Reverse().Take(3)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 4 - rowCount; i++){
+                                    @for (int i = 0; i < 3 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -238,7 +238,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 4; i++){
+                                    @for (int i = 0; i < 3; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
