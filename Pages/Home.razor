@@ -6,6 +6,17 @@
 
 <PageTitle>Home</PageTitle>
 
+<Modal @ref="welcomeModal"
+       Title="Welcome!"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
+
+    <BodyTemplate>
+        <p>Welcome to Young At Mind!</p>
+        <p>As of version 1.0, this program isn't supported for mobile. If the text looks too big/small on your device when entering fullscreen mode, please try increasing your browser's zoom (Ctrl+= on Windows or Cmd+= on Mac)</p>
+    </BodyTemplate>
+</Modal>
 
 @if (!_loading && AuthService.IsAuthenticated){
     @if (_statsLoading){
@@ -100,14 +111,14 @@
                                 <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (mathStats.History.Count > 0){
-                                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(3)){
+                                    @foreach (var entry in mathStats.History.AsEnumerable().Reverse().Take(4)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 3 - rowCount; i++){
+                                    @for (int i = 0; i < 4 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -115,7 +126,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 3; i++){
+                                    @for (int i = 0; i < 4; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -156,14 +167,14 @@
                                 <p class="recentScoresTitle" id="memoryRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (memoryStats.History.Count > 0){
-                                    @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(3)){
+                                    @foreach (var entry in memoryStats.History.AsEnumerable().Reverse().Take(4)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@entry.Score</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 3 - rowCount; i++){
+                                    @for (int i = 0; i < 4 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -171,7 +182,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 3; i++){
+                                    @for (int i = 0; i < 4; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -212,14 +223,14 @@
                                 <p class="recentScoresTitle" id="mathRecentScoreTitle">Recent scores</p>
                                 @{ rowCount = 0; }
                                 @if (stroopStats.History.Count > 0){
-                                    @foreach (var entry in stroopStats.History.AsEnumerable().Reverse().Take(3)){
+                                    @foreach (var entry in stroopStats.History.AsEnumerable().Reverse().Take(4)){
                                         <div class="recentScoreRow">
                                             <p id="margin0">@entry.Date</p>
                                             <p id="margin0">@FormatTime(entry.TimeSeconds)</p>
                                         </div>
                                         { rowCount += 1; }
                                     }
-                                    @for (int i = 0; i < 3 - rowCount; i++){
+                                    @for (int i = 0; i < 4 - rowCount; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -227,7 +238,7 @@
                                     }
                                 }
                                 else{
-                                    @for (int i = 0; i < 3; i++){
+                                    @for (int i = 0; i < 4; i++){
                                         <div class="recentScoreRow">
                                             <p id="margin0">—</p>
                                             <p id="margin0">—</p>
@@ -244,6 +255,8 @@
 }
 
 @code {
+    private static bool _hasShownWelcomeModal = false;
+    private Modal welcomeModal = default!;
     private int rowCount = 0;
     private bool _loading = true;
     private bool _statsLoading = true;
@@ -266,6 +279,13 @@
             UpdateTodayComplete();
         }
         _statsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if (firstRender && !_hasShownWelcomeModal){
+            _hasShownWelcomeModal = true;
+            await welcomeModal.ShowAsync();
+        }
     }
 
     private void BuildCompletedDates(){
