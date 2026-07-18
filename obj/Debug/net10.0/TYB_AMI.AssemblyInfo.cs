@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TYB_AMI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa7c9e1b0d42ea79abfde2e0ab3ff0150019690c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00f98c06b5194e102ad7c1607a2a2b2423b206fc")]
 [assembly: System.Reflection.AssemblyProductAttribute("TYB_AMI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TYB_AMI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

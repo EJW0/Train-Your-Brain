@@ -63,15 +63,17 @@
     </div>
     <div class="problem-box">
         <EditForm Model="problems" OnSubmit="NextProblem">
-            @if (isEmpty == true){
-                <p class="animate__animated animate__slideInDown errorMessage">@error</p>
-            }
             <div class="problem">
                 <div class="inputAndQuestion">
                     <h1>@problems[currentProblemIndex].Problem</h1>
+                    <div class="answerInputWrapper">
+                        @if (isEmpty == true){
+                            <p class="animate__animated animate__slideInDown errorMessage">@error</p>
+                        }
                         <NumberInput TValue="int?"
                                     class="answer-input"
                                     @bind-Value="userAnswer"/>
+                    </div>
                     @if (showCorrectImage){
                         <img src="checkmark.svg" @key="animationCounter" class="animate__animated correct-indicator animate__faster" alt="checkmark" width="50" height="50">
                     }
@@ -91,7 +93,7 @@ else {
                 <div class="resultsContainer">
                     <h1>Results</h1>
                     <p></p>
-                    <h2>Time - @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
+                    <h2>Time: @TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss")</h2>
                     <h2>Score: @correctAnswers / @problems.Count</h2>
                 </div>
             </Content>

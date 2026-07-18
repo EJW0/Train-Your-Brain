@@ -1,5 +1,7 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(16px, 1vw + 0.5vh, 22px);
+
 }
 
 h1:focus {
@@ -115,7 +117,7 @@ code {
 }
 
 .answer-input {
-    width: 4em;
+    width: 3em;
     height: 2em;
     font-size: 2em;
     text-align: left;
@@ -123,6 +125,11 @@ code {
     border: 2px solid #77767e;
     padding: 10px;
     margin-left: 0.5em;
+}
+
+.answer-input.valid.modified:not([type=checkbox]),
+.wordInput.valid.modified:not([type=checkbox]) {
+    outline: none;
 }
 
 .problem {
@@ -152,6 +159,12 @@ code {
     -webkit-appearance: none;
 }
 
+/* Remove arrows in Firefox */
+.answer-input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
 .problem-box {
     /* border: 1px solid red; */
     display: flex;
@@ -165,13 +178,20 @@ code {
     height: 15em;
 }
 
+.answerInputWrapper {
+    position: relative;
+}
+
 .errorMessage {
     /* border: 1px solid blue; */
     position: absolute;
     color: red;
-    left: 50%;
-    top: -0.5em;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    top: -1.8em;
+    width: max-content;
+    margin: 0 auto;
+    white-space: nowrap;
     --animate-duration: 0.5s;
 }
 
