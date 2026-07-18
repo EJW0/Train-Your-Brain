@@ -895,3 +895,48 @@ code {
     .statsNum {
         font-size: 3em;
     }
+
+.resourcesPage {
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+}
+
+.resourcesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 1.5em;
+    padding: 0px 5%;
+    height: 90%;
+    
+}
+    .resourcesBook {
+        border: 1px solid rgb(0, 0, 0);
+        border-radius: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: calc(50% - 1.5em);
+        text-align: center;
+    }
+    .resourcesImg {
+        width: 55%;
+        height: auto;
+    }
+    .resourcesLinkContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; 
+        width: 50%;
+    }
+        .resourcesLink {
+            border: 1px solid rgb(0, 0, 0);
+            border-radius: 40px;;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30%;
+            text-align: center;
+        }

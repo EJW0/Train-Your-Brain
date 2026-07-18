@@ -25,11 +25,25 @@
 
     <BodyTemplate>
         <p>Found something that doesn't seem right?</p>
-        <p>Please report it through this link [google form]</p>
+        <p>Please report it in this <a href="https://forms.gle/YLGivUHhW3LtksCo9">Google Form</a></p>
 
         <ul>Known bugs:
             <li>For some Firefox users, inputting the same answer in a row during the Math exercise brings up the prompt, "Please input a number".</li>
         </ul>
+    </BodyTemplate>
+</Modal>
+<Modal @ref="infoModal"
+       Title="What is Young At Mind?"
+       UseStaticBackdrop="true"
+       CloseOnEscape="true"
+       IsVerticallyCentered="true">
+    <BodyTemplate>
+        <p>Young At Mind is a program designed to improve brain health through simple exercises. Certain exercises are to be done once per Day.</p>
+        <p>The exercises required for Day 1 are Word Memory and Stroop Test. For Days 2-7, the required exerice is Math. Afterwards, this 1-week cycle repeats.</p>
+        <p>After all of the required exercises are completed each Day, the Day will progress. You won't be able to progress until the countdown reaches 0 (12AM EST). Keep coming back each day to continue your Streak!</p>
+        <p>If you want to continue doing these exercises, you are free to do so through the "Practice" button on the left sidebar. Scores from practice rounds won't be saved or counted towards your Stats.</p>
+        <p>You can keep track of your scores for each game in the "Stats" tab.</p>
+        <p>(This application is in early development, so there may be unexpected bugs! If you find one, please report it through this <a href="https://forms.gle/YLGivUHhW3LtksCo9">Google Form</a>)</p>
     </BodyTemplate>
 </Modal>
 <Modal @ref="feedbackModal"
@@ -39,9 +53,10 @@
        IsVerticallyCentered="true">
 
     <BodyTemplate>
-        <p>If you have any feedback on the program, please tell us through this form [google form]</p>
+        <p>If you have any feedback on the program, please tell us through this <a href="https://docs.google.com/forms/d/e/1FAIpQLSeRnQQgmrdKawQJSTNNLFuBjIzLQqLeN-CivjA0xXWhGnW0gA/viewform?usp=publish-editor">Google Form</a></p>
     </BodyTemplate>
 </Modal>
+
 
 
 <div class="topBar">
@@ -60,6 +75,9 @@
         <button class="credits" @onclick="ToggleFullscreen">
             <p class="creditsButton bi @(_isFullscreen ? "bi-fullscreen-exit" : "bi-fullscreen")"></p>
         </button>
+        <button class="credits" @onclick ="ShowInfo">
+            <p class="creditsButton bi bi-info-circle"></p>
+        </button>
         <button class="credits" @onclick ="ShowFeedback">
             <p class="creditsButton bi bi-pencil-square"></p>
         </button>
@@ -77,6 +95,8 @@
     private Modal creditsModal = default!;
     private Modal bugModal = default!;
     private Modal feedbackModal = default!;
+    private Modal infoModal = default!;
+
     private bool _isFullscreen = false;
     private bool _fullscreenInitialized;
     private DotNetObjectReference<TopBar>? _dotNetRef;
@@ -115,6 +135,10 @@
     }
     private async Task ShowFeedback(){
         await feedbackModal.ShowAsync();
+    }
+
+    private async Task ShowInfo(){
+        await infoModal.ShowAsync();
     }
 
     public async ValueTask DisposeAsync(){
